@@ -13,3 +13,6 @@ def test_correct_numbers_complex():
 def test_incorrect_numbers_simple():
     assert main.extractPhoneNumber('My number today is +7999286969') == None
     assert main.extractPhoneNumber('My number today is +8999286969') == None
+
+def test_all_numbers():
+    assert main.extractPhoneNumber('Epic my number is +7 (999) 228-69-69 yeeah and also 89993337766 or even +7 (12) 342-11-33', all=True) == [('8', '999', '333', '77', '66'), ('+7', '(999)', '228', '69', '69')]
