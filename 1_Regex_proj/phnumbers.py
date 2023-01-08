@@ -40,7 +40,7 @@ def censor_phone_number(string):
 def phone_numbers_clipboard():
     # Find all phone numbers in the string from clipboard
     string = str(pyperclip.paste())
-    phone_numbers = set(''.join(number) for number in extract_phone_number(string, all=True))
+    phone_numbers = set('8' + ''.join(number[1:]) for number in extract_phone_number(string, all=True))
     pyperclip.copy('\n'.join(phone_numbers))
 
 if __name__ == '__main__':
