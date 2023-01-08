@@ -3,7 +3,7 @@ import re, pyperclip
 def extract_phone_number(string, all=False):
     # Creating a phone number regex objects
     phone_regex_simple = re.compile(r'(\+7|8)(\d{3})(\d{3})(\d{2})(\d{2})')
-    phone_regex_complex = re.compile(r'(\+7|8)\s?(\(\d{3}\))\s?(\d{3})-(\d{2})-(\d{2})')
+    phone_regex_complex = re.compile(r'(\+7|8)\s?\((\d{3})\)\s?(\d{3})-(\d{2})-(\d{2})')
     
     # If user wants to find all phone numbers in the string
     if all:
@@ -33,7 +33,7 @@ def extract_phone_number(string, all=False):
 def censor_phone_number(string):
     # Creating a phone number regex objects
     phone_regex_simple = re.compile(r'(\+7|8)(\d{3})(\d{3})(\d{2})(\d{2})')
-    phone_regex_complex = re.compile(r'(\+7|8)\s?(\(\d{3}\))\s?(\d{3})-(\d{2})-(\d{2})')
+    phone_regex_complex = re.compile(r'(\+7|8)\s?\((\d{3})\)\s?(\d{3})-(\d{2})-(\d{2})')
 
     return phone_regex_complex.sub(r'\1 (***) ***-**-**', phone_regex_simple.sub(r'\1**********', string))
 
