@@ -1,4 +1,4 @@
-import re
+import re, pyperclip
 
 def extract_phone_number(string, all=False):
     # Creating a phone number regex objects
@@ -37,6 +37,12 @@ def censor_phone_number(string):
 
     return phone_regex_complex.sub(r'\1 (***) ***-**-**', phone_regex_simple.sub(r'\1**********', string))
 
+def phone_numbers_clipboard():
+    # Find all phone numbers in the string from clipboard
+    string = str(pyperclip.paste())
+    phone_numbers = set(''.join(number) for number in extract_phone_number(string, all=True))
+    pyperclip.copy('\n'.join(phone_numbers))
+
 if __name__ == '__main__':
-    print(extract_phone_number('Epic my number is 89992286969 yeeah'))
-    print(extract_phone_number('Epic my number is +7 (999) 228-69-69 yeeah'))
+    print(extract_phone_number('Epic my number is +7 (999) 228-69-69 yeeah and 89992286969 also!'))
+    phone_numbers_clipboard()
