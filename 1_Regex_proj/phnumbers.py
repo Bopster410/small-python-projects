@@ -1,5 +1,6 @@
 import re, pyperclip
 
+# Find all phone numbers in the string
 def extract_phone_number(string, all=False):
     # Creating a phone number regex objects
     phone_regex_simple = re.compile(r'(\+7|8)(\d{3})(\d{3})(\d{2})(\d{2})')
@@ -30,6 +31,7 @@ def extract_phone_number(string, all=False):
         else:
             return None
 
+# Censor all phone numbers in the string
 def censor_phone_number(string):
     # Creating a phone number regex objects
     phone_regex_simple = re.compile(r'(\+7|8)(\d{3})(\d{3})(\d{2})(\d{2})')
@@ -37,10 +39,15 @@ def censor_phone_number(string):
 
     return phone_regex_complex.sub(r'\1 (***) ***-**-**', phone_regex_simple.sub(r'\1**********', string))
 
+# Find all phone numbers in the copied text and return the result to the clipboard
 def phone_numbers_clipboard():
     # Find all phone numbers in the string from clipboard
     string = str(pyperclip.paste())
+
+    # Change '+7' to '8'
     phone_numbers = set('8' + ''.join(number[1:]) for number in extract_phone_number(string, all=True))
+
+    # Copy result to the clipboard
     pyperclip.copy('\n'.join(phone_numbers))
 
 if __name__ == '__main__':
