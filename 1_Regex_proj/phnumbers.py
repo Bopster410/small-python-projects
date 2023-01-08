@@ -31,7 +31,11 @@ def extract_phone_number(string, all=False):
             return None
 
 def censor_phone_number(string):
-    return 'Wow this phone number +7********** is soooo cool'
+    # Creating a phone number regex objects
+    phone_regex_simple = re.compile(r'(\+7|8)(\d{3})(\d{3})(\d{2})(\d{2})')
+    phone_regex_complex = re.compile(r'(\+7|8)\s?(\(\d{3}\))\s?(\d{3})-(\d{2})-(\d{2})')
+
+    return phone_regex_complex.sub(r'\1 (***) ***-**-**', phone_regex_simple.sub(r'\1**********', string))
 
 if __name__ == '__main__':
     print(extract_phone_number('Epic my number is 89992286969 yeeah'))
