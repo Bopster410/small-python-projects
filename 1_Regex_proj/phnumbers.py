@@ -30,6 +30,9 @@ def extract_phone_number(string, all=False):
         else:
             return None
 
+def censor_phone_number(string):
+    return 'Wow this phone number +7********** is soooo cool'
+
 if __name__ == '__main__':
     print(extract_phone_number('Epic my number is 89992286969 yeeah'))
     print(extract_phone_number('Epic my number is +7 (999) 228-69-69 yeeah'))

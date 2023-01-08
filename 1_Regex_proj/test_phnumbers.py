@@ -16,3 +16,6 @@ def test_incorrect_numbers_simple():
 
 def test_all_numbers():
     assert phnumbers.extract_phone_number('Epic my number is +7 (999) 228-69-69 yeeah and also 89993337766 or even +7 (12) 342-11-33', all=True) == [('8', '999', '333', '77', '66'), ('+7', '(999)', '228', '69', '69')]
+
+def test_censor_number():
+    assert phnumbers.censore_phone_number('Wow this phone number +79992286969 is soooo cool') == 'Wow this phone number +7********** is soooo cool'
