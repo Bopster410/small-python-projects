@@ -22,6 +22,7 @@ class fileManipulator():
             shutil.copy(p / src, p / dest)
             logging.info(f"created '{dir_to_create}' folders")
 
+    # Moves src to dest
     def move(self, src, dest):
         logging.info(f'moving {src} to {dest}')
 
@@ -37,7 +38,7 @@ class fileManipulator():
             os.makedirs(dir_to_create)
             shutil.move(p / src, p / dest)
             logging.info(f"created '{dir_to_create}' folders")
-
+    
 
 if __name__ == '__main__':
     logging.basicConfig(filename='files.log', filemode='w', level=logging.INFO, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
