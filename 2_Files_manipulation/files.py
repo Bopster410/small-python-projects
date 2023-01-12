@@ -1,4 +1,4 @@
-import logging, shutil
+import logging, shutil, os
 from pathlib import Path
 
 class fileManipulator():
@@ -8,8 +8,20 @@ class fileManipulator():
     # Copies scr to dest (relative)
     def copy(self, src, dest):
         logging.info(f'copying {src} to {dest}')
+
+        # Path to current workin directory in p variable
         p = Path.cwd()
-        shutil.copy(p / src, p / dest)
+
+        try:
+            shutil.copy(p / src, p / dest)
+        # If dest contains folders that doesn't exist
+        # then create them
+        except FileNotFoundError:
+            dir_to_create = dest[:dest.rfind('/')]
+            os.makedirs(dir_to_create)
+            shutil.copy(p / src, p / dest)
+            logging.info(f"created '{dir_to_create}' folders")
+
 
 
 if __name__ == '__main__':
