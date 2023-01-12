@@ -22,9 +22,25 @@ class fileManipulator():
             shutil.copy(p / src, p / dest)
             logging.info(f"created '{dir_to_create}' folders")
 
+    def move(self, src, dest):
+        logging.info(f'moving {src} to {dest}')
+
+        # Path to current workin directory in p variable
+        p = Path.cwd()
+
+        try:
+            shutil.move(p / src, p / dest)
+        # If dest contains folders that doesn't exist
+        # then create them
+        except FileNotFoundError:
+            dir_to_create = dest[:dest.rfind('/')]
+            os.makedirs(dir_to_create)
+            shutil.move(p / src, p / dest)
+            logging.info(f"created '{dir_to_create}' folders")
 
 
 if __name__ == '__main__':
     logging.basicConfig(filename='files.log', filemode='w', level=logging.INFO, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
     fm = fileManipulator()
-    fm.copy('files.log', 'logs/files.log')
+    fm.copy('files.log', 'logss/files.log')
+    fm.move('logss/files.log', 'logs/files.log')
