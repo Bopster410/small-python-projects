@@ -1,4 +1,4 @@
-import logging, shutil, os
+import logging, shutil, os, zipfile
 from pathlib import Path
 
 class fileManipulator():
@@ -38,6 +38,12 @@ class fileManipulator():
             os.makedirs(dir_to_create)
             shutil.move(p / src, p / dest)
             logging.info(f"created '{dir_to_create}' folders")
+
+    # Creates zip-archive named [name] with [dir] in it
+    def zip(self, dir, name):
+        dir_zipped = zipfile.ZipFile(name, 'w')
+        dir_zipped.write(dir, compress_type=zipfile.ZIP_DEFLATED)
+        dir_zipped.close()
     
 
 if __name__ == '__main__':
@@ -45,3 +51,4 @@ if __name__ == '__main__':
     fm = fileManipulator()
     fm.copy('files.log', 'logss/files.log')
     fm.move('logss/files.log', 'logs/files.log')
+    fm.zip('logss', 'loggs.zip')
