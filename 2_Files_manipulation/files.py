@@ -72,5 +72,5 @@ if __name__ == '__main__':
     fm = fileManipulator()
     fm.copy('files.log', 'logss/files.log')
     fm.move('logss/files.log', 'logs/files.log')
-    fm.zip('tst', 'test.zip')
-    fm.unzip('tst.zip')
+    fm.zip('test', 'test.zip')
+    fm.unzip('test.zip')
