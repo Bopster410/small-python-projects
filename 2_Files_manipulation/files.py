@@ -42,21 +42,29 @@ class fileManipulator():
     # Creates zip-archive named [name] with [dir] in it
     # TODO add input errors handlers
     def zip(self, dir, name):
-        with zipfile.ZipFile(name, 'w') as dir_zipped:
-            p_dir = Path(dir)
-            # If [dir] is directory
-            if p_dir.is_dir():
-                # Recursively add all files from the directory to the archive
-                for file in p_dir.rglob('*'):
-                    dir_zipped.write(file, compress_type=zipfile.ZIP_DEFLATED)
-            # If [dir] is a single file actually
-            else:
-                dir_zipped.write(dir, compress_type=zipfile.ZIP_DEFLATED)
+        try:
+            with zipfile.ZipFile(name, 'w') as dir_zipped:
+                p_dir = Path(dir)
+                # If [dir] is directory
+                if p_dir.is_dir():
+                    # Recursively add all files from the directory to the archive
+                    for file in p_dir.rglob('*'):
+                        dir_zipped.write(file, compress_type=zipfile.ZIP_DEFLATED)
+                # If [dir] is a single file actually
+                else:
+                    dir_zipped.write(dir, compress_type=zipfile.ZIP_DEFLATED)
+                logging.info(f"Successfully zipped {dir} into {name}")
+        except:
+            logging.error(f"Couldn't zip {dir}: no such file or directory")
     
     # TODO add input errors handlers
     def unzip(self, dir, new_name=''):
-        with zipfile.ZipFile(dir) as dir_zipped:
-            dir_zipped.extractall(new_name) if len(new_name) else dir_zipped.extractall()
+        try:
+            with zipfile.ZipFile(dir) as dir_zipped:
+                dir_zipped.extractall(new_name) if len(new_name) else dir_zipped.extractall()
+            logging.info(f"Successfully extracted {dir} into {new_name if len(new_name) else 'current directory'}")
+        except FileNotFoundError:
+            logging.error(f"Couldn't unzip {dir} file: no directory with this name")
     
 
 if __name__ == '__main__':
@@ -64,5 +72,5 @@ if __name__ == '__main__':
     fm = fileManipulator()
     fm.copy('files.log', 'logss/files.log')
     fm.move('logss/files.log', 'logs/files.log')
-    fm.zip('test', 'test.zip')
-    fm.unzip('test.zip', 'test_unzipped')
+    fm.zip('tst', 'test.zip')
+    fm.unzip('tst.zip')
