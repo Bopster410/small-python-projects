@@ -41,13 +41,21 @@ class fileManipulator():
 
     # Creates zip-archive named [name] with [dir] in it
     def zip(self, dir, name):
-        dir_zipped = zipfile.ZipFile(name, 'w')
-        dir_zipped.write(dir, compress_type=zipfile.ZIP_DEFLATED)
-        dir_zipped.close()
+        with zipfile.ZipFile(name, 'w') as dir_zipped:
+            p_dir = Path(dir)
+            # If [dir] is directory
+            if p_dir.is_dir():
+                # Recursively add all files from the directory to the archive
+                for file in p_dir.glob('*'):
+                    dir_zipped.write(file, compress_type=zipfile.ZIP_DEFLATED)
+            # If [dir] is a single file actually
+            else:
+                dir_zipped.write(dir, compress_type=zipfile.ZIP_DEFLATED)
+
     
-    def unzip(self, name):
-        dir_zipped = zipfile.ZipFile(name)
-        dir_zipped.extractall()
+    def unzip(self, dir, new_name=''):
+        dir_zipped = zipfile.ZipFile(dir)
+        dir_zipped.extractall(new_name) if len(new_name) else dir_zipped.extractall()
         dir_zipped.close()
     
 
@@ -56,6 +64,7 @@ if __name__ == '__main__':
     fm = fileManipulator()
     fm.copy('files.log', 'logss/files.log')
     fm.move('logss/files.log', 'logs/files.log')
-    fm.zip('logss', 'loggs.zip')
+    fm.zip('files.log', 'loggs.zip')
     fm.zip('logs', 'logs.zip')
+    fm.unzip('logs.zip', 'l o g s')
     fm.unzip('logs.zip')
