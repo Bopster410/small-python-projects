@@ -62,11 +62,7 @@ class fileManipulator():
 if __name__ == '__main__':
     logging.basicConfig(filename='files.log', filemode='w', level=logging.INFO, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
     fm = fileManipulator()
-    # fm.copy('files.log', 'logss/files.log')
-    # fm.move('logss/files.log', 'logs/files.log')
-    # fm.zip('files.log', 'loggs.zip')
-    # fm.zip('logs', 'logs.zip')
-    # fm.unzip('logs.zip', 'l o g s')
-    # fm.unzip('logs.zip')
+    fm.copy('files.log', 'logss/files.log')
+    fm.move('logss/files.log', 'logs/files.log')
     fm.zip('test', 'test.zip')
     fm.unzip('test.zip', 'test_unzipped')
