@@ -40,7 +40,6 @@ class fileManipulator():
             logging.info(f"created '{dir_to_create}' folders")
 
     # Creates zip-archive named [name] with [dir] in it
-    # TODO add input errors handlers
     def zip(self, dir, name):
         try:
             with zipfile.ZipFile(name, 'w') as dir_zipped:
@@ -57,7 +56,7 @@ class fileManipulator():
         except:
             logging.error(f"Couldn't zip {dir}: no such file or directory")
     
-    # TODO add input errors handlers
+    # Extracts files from [dir] archive into [new_name] folder
     def unzip(self, dir, new_name=''):
         try:
             with zipfile.ZipFile(dir) as dir_zipped:
