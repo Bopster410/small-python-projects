@@ -45,6 +45,11 @@ class fileManipulator():
         dir_zipped.write(dir, compress_type=zipfile.ZIP_DEFLATED)
         dir_zipped.close()
     
+    def unzip(self, name):
+        dir_zipped = zipfile.ZipFile(name)
+        dir_zipped.extractall()
+        dir_zipped.close()
+    
 
 if __name__ == '__main__':
     logging.basicConfig(filename='files.log', filemode='w', level=logging.INFO, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
@@ -52,3 +57,5 @@ if __name__ == '__main__':
     fm.copy('files.log', 'logss/files.log')
     fm.move('logss/files.log', 'logs/files.log')
     fm.zip('logss', 'loggs.zip')
+    fm.zip('logs', 'logs.zip')
+    fm.unzip('logs.zip')
