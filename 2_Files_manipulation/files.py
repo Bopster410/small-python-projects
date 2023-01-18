@@ -13,13 +13,19 @@ class fileManipulator():
         p = Path.cwd()
 
         try:
-            shutil.copy(p / src, p / dest)
+            if Path(p / src).is_dir():
+                shutil.copytree(p / src, p /dest)
+            else:
+                shutil.copy(p / src, p / dest)
         # If dest contains folders that doesn't exist
         # then create them
         except FileNotFoundError:
             dir_to_create = dest[:dest.rfind('/')]
             os.makedirs(dir_to_create)
-            shutil.copy(p / src, p / dest)
+            if Path(p / src).is_dir():
+                shutil.copytree(p / src, p /dest)
+            else:
+                shutil.copy(p / src, p / dest)
             logging.info(f"created '{dir_to_create}' folders")
 
     # Moves src to dest
@@ -70,6 +76,7 @@ if __name__ == '__main__':
     logging.basicConfig(filename='files.log', filemode='w', level=logging.INFO, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
     fm = fileManipulator()
     fm.copy('files.log', 'logss/files.log')
-    fm.move('logss/files.log', 'logs/files.log')
+    fm.copy('logss', 'logsss/logss')
+    fm.move('test', 'logss')
     fm.zip('test', 'test.zip')
     fm.unzip('test.zip')
