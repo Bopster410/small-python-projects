@@ -12,6 +12,7 @@ class fileManipulator():
         # Path to current workin directory in p variable
         p = Path.cwd()
 
+        # Checks if [src] exists
         if Path(p / src).exists():
             try:
                 if Path(p / src).is_dir():
@@ -38,6 +39,7 @@ class fileManipulator():
         # Path to current workin directory in p variable
         p = Path.cwd()
 
+        # Checks if [src] exists
         if Path(p / src).exists():
             try:
                 shutil.move(p / src, p / dest)
