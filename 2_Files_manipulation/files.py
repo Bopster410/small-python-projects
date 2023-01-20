@@ -34,6 +34,7 @@ class FileManipulator():
 
     # Moves src to dest
     def move(self, src, dest):
+        
         logging.info(f'moving {src} to {dest}')
 
         # Path to current workin directory in p variable
@@ -55,6 +56,7 @@ class FileManipulator():
 
     # Creates zip-archive named [name] with [dir] in it
     def zip(self, dir, name):
+        logging.info(f'zipping {dir}')
         try:
             with zipfile.ZipFile(name, 'w') as dir_zipped:
                 p_dir = Path(dir)
@@ -66,18 +68,19 @@ class FileManipulator():
                 # If [dir] is a single file actually
                 else:
                     dir_zipped.write(dir, compress_type=zipfile.ZIP_DEFLATED)
-                logging.info(f"Successfully zipped {dir} into {name}")
+                logging.info(f"successfully zipped {dir} into {name}")
         except:
-            logging.error(f"Couldn't zip {dir}: no such file or directory")
+            logging.error(f"couldn't zip {dir}: no such file or directory")
     
     # Extracts files from [dir] archive into [new_name] folder
     def unzip(self, dir, new_name=''):
+        logging.info(f'unzipping {dir}')
         try:
             with zipfile.ZipFile(dir) as dir_zipped:
                 dir_zipped.extractall(new_name) if len(new_name) else dir_zipped.extractall()
-            logging.info(f"Successfully extracted {dir} into {new_name if len(new_name) else 'current directory'}")
+            logging.info(f"successfully extracted {dir} into {new_name if len(new_name) else 'current directory'}")
         except FileNotFoundError:
-            logging.error(f"Couldn't unzip {dir} file: no directory with this name")
+            logging.error(f"couldn't unzip {dir} file: no directory with this name")
     
 
 if __name__ == '__main__':
