@@ -1,9 +1,9 @@
 import logging, shutil, os, zipfile
 from pathlib import Path
 
-class fileManipulator():
+class FileManipulator():
     def __init__(self):
-        logging.info('fileManipulator object has been created')
+        logging.info('FileManipulator object has been created')
     
     # Copies scr to dest (relative)
     def copy(self, src, dest):
@@ -82,7 +82,7 @@ class fileManipulator():
 
 if __name__ == '__main__':
     logging.basicConfig(filename='files.log', filemode='w', level=logging.INFO, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
-    fm = fileManipulator()
+    fm = FileManipulator()
     fm.copy('files.log', 'logss/files.log')
     fm.copy('logss', 'logsss/logss')
     fm.move('test', 'logss')
