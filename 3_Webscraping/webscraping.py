@@ -3,6 +3,11 @@ import logging, webbrowser, shelve, bs4
 class WebScaper():
     def __init__(self):
         logging.info("WebScraper object has been created")
+    
+    def get_html(self, name):
+        file = open(name)
+        text = bs4.BeautifulSoup(file, 'html.parser')
+        return text
 
 class WebPages():
     def __init__(self):
@@ -32,6 +37,5 @@ class WebPages():
 
 if __name__ == '__main__':
     logging.basicConfig(filename='files.log', filemode='w', level=logging.INFO, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
-    ws = WebScraper()
-    ws.to_favorites("https://www.youtube.com/")
-    print(ws.get_favorites())
+    ws = WebScaper()
+    print(ws.get_html('F:\\infsem\\1 sem\\4\\main.html'))
