@@ -1,6 +1,6 @@
 import logging, webbrowser, shelve
 
-class WebScraper():
+class WebPages():
     def __init__(self):
         logging.info("WebScraper object has been created")
         with shelve.open("user_data") as data:
