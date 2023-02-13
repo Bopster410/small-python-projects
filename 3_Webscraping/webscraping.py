@@ -1,8 +1,12 @@
-import logging, webbrowser, shelve
+import logging, webbrowser, shelve, bs4
+
+class WebScaper():
+    def __init__(self):
+        logging.info("WebScraper object has been created")
 
 class WebPages():
     def __init__(self):
-        logging.info("WebScraper object has been created")
+        logging.info("WebPages object has been created")
         with shelve.open("user_data") as data:
             if not "fav_url" in data.keys():
                 data["fav_url"] = []
