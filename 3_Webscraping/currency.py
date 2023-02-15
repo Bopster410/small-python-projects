@@ -1,11 +1,19 @@
-class Currency():
-    def __init__(self, value, currency):
-        self.value = value
-        self.currency = currency
+class Dollar():
+    def __init__(self, amount):
+        self.__amount = amount
     
-    def get_info(self):
-        return f'{self.value} {self.currency}'
+    def __eq__(self, __o: object) -> bool:
+        return __o.__amount == self.__amount
+
+    def times(self, multiplier) -> object:
+        return Dollar(self.__amount * multiplier)
+
+class Ruble():
+    def __init__(self, amount):
+        self.__amount = amount
     
-    def change_value(self, new_value):
-        if new_value >= 0:
-            self.value = new_value
+    def __eq__(self, __o: object) -> bool:
+        return __o.__amount == self.__amount
+
+    def times(self, multiplier) -> object:
+        return Dollar(self.__amount * multiplier)
