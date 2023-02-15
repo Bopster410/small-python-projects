@@ -1,11 +1,6 @@
-class Currency():
-    def __init__(self, value, currency):
-        self.value = value
-        self.currency = currency
-    
-    def get_info(self):
-        return f'{self.value} {self.currency}'
-    
-    def change_value(self, new_value):
-        if new_value >= 0:
-            self.value = new_value
+class Dollar():
+    def __init__(self, amount):
+        self.amount = amount
+
+    def times(self, multiplier):
+        self.amount *= multiplier
