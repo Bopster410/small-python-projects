@@ -1,13 +1,13 @@
-from currency import Dollar, Ruble
+from currency import Dollar, Ruble, Money
 
 def test_equals_dollar():
-    assert Dollar(5) == Dollar(5)
-    assert Dollar(5) != Dollar(6)
-    assert Ruble(5) == Ruble(5)
-    assert Ruble(5) != Ruble(6)
-    assert Ruble(5) != Dollar(5)
+    assert Money(5).dollar() == Money(5).dollar()
+    assert Money(5).dollar() != Money(6).dollar()
+    assert Money(5).ruble() == Money(5).ruble()
+    assert Money(5).ruble() != Money(6).ruble()
+    assert Money(5).ruble() != Money(5).dollar()
 
 def test_multiplication():
-    five = Dollar(5)
-    assert Dollar(15) == five.times(3)
-    assert Dollar(20) == five.times(4)
+    five = Money(5).dollar()
+    assert Money(15).dollar() == five.times(3)
+    assert Money(20).dollar() == five.times(4)
