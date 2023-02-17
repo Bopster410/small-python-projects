@@ -11,4 +11,4 @@ class Dollar(Money):
 
 class Ruble(Money):
     def times(self, multiplier) -> object:
-        return Dollar(self._amount * multiplier)
+        return Ruble(self._amount * multiplier)
