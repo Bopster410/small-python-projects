@@ -1,19 +1,14 @@
-class Dollar():
+class Money():
     def __init__(self, amount):
-        self.__amount = amount
-    
+        self._amount = amount
+
     def __eq__(self, __o: object) -> bool:
-        return __o.__amount == self.__amount
+        return __o._amount == self._amount
 
+class Dollar(Money):
     def times(self, multiplier) -> object:
-        return Dollar(self.__amount * multiplier)
+        return Dollar(self._amount * multiplier)
 
-class Ruble():
-    def __init__(self, amount):
-        self.__amount = amount
-    
-    def __eq__(self, __o: object) -> bool:
-        return __o.__amount == self.__amount
-
+class Ruble(Money):
     def times(self, multiplier) -> object:
-        return Dollar(self.__amount * multiplier)
+        return Dollar(self._amount * multiplier)
