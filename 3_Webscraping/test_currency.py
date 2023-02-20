@@ -12,6 +12,9 @@ def test_multiplication():
     assert Money("USD", 15).dollar() == five.times(3)
     assert Money("USD", 20).dollar() == five.times(4)
 
+def test_differentClassesEquality():
+    assert Money("USD", 10) == Dollar("USD", 10)
+
 def test_currency():
     assert Money("USD", 1).dollar().currency() == "USD"
     assert Money("RUB", 1).ruble().currency() == "RUB"
