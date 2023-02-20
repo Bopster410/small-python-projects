@@ -16,20 +16,11 @@ class Money():
         return self._currency
     
     def dollar(self):
-        return Dollar("USD", self._amount)
+        return Money("USD", self._amount)
     
     def ruble(self):
-        return Ruble("RUB", self._amount)
+        return Money("RUB", self._amount)
 
     def times(self, multiplier):
         return Money(self._currency, self._amount * multiplier)
 
-
-class Dollar(Money):
-    def __init__(self, currency, amount=0):
-        super().__init__(currency, amount)
-    
-
-class Ruble(Money):
-    def __init__(self, currency, amount=0):
-        super().__init__(currency, amount)
