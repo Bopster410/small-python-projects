@@ -1,4 +1,7 @@
-class Money():
+class Expression():
+    pass
+
+class Money(Expression):
     def __init__(self, currency, amount=0):
         self._amount = amount
         self._currency = currency
@@ -6,7 +9,7 @@ class Money():
     def __eq__(self, __o: object) -> bool:
         return __o._amount == self._amount and self.currency() == __o.currency()
     
-    def __add__(self, __o: object):
+    def __add__(self, __o: object) -> Expression:
         return Money(self.currency(), self._amount + __o._amount)
     
     def __str__(self) -> str:
@@ -27,3 +30,6 @@ class Money():
     def times(self, multiplier):
         return Money(self._currency, self._amount * multiplier)
 
+class Bank():
+    def reduce(self, source: Expression, to: str):
+        return Money("USD", 10).dollar()
