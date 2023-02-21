@@ -6,6 +6,9 @@ class Money():
     def __eq__(self, __o: object) -> bool:
         return __o._amount == self._amount and self.currency() == __o.currency()
     
+    def __add__(self, __o: object):
+        return Money(self.currency(), self._amount + __o._amount)
+    
     def __str__(self) -> str:
         return f"{self._amount} {self._currency}"
     

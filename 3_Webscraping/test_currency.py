@@ -13,3 +13,7 @@ def test_multiplication():
 def test_currency():
     assert Money("USD", 1).dollar().currency() == "USD"
     assert Money("RUB", 1).ruble().currency() == "RUB"
+
+def test_sum():
+    sum = Money("USD", 5).dollar() + Money("USD", 6).dollar()
+    assert sum == Money("USD", 11)
