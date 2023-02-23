@@ -4,3 +4,4 @@
 *.log
 user_data.*
 .vscode/
+*.code-workspace

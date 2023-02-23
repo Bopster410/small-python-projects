@@ -1,4 +1,4 @@
-from currency import Money
+from currency import Money, Bank, Sum
 
 def test_equals_dollar():
     assert Money("USD", 5).dollar() != Money("USD", 6).dollar()
@@ -13,3 +13,37 @@ def test_multiplication():
 def test_currency():
     assert Money("USD", 1).dollar().currency() == "USD"
     assert Money("RUB", 1).ruble().currency() == "RUB"
+
+def test_sum():
+    five = Money("USD", 5).dollar()
+    sum = five + five
+    bank = Bank()
+    reduced = bank.reduce("USD", source=sum)
+    assert Money("USD", 10).dollar() == reduced
+
+def test_plus_returns_sum():
+    five = Money("USD", 5).dollar()
+    result = five + five
+    sum = result
+    assert sum.augend == five
+    assert sum.addend == five
+
+def test_reduce_sum():
+    sum = Sum(Money("USD", 3), Money("USD", 4))
+    bank = Bank()
+    result = bank.reduce("USD", source=sum)
+    assert Money("USD", 7) == result
+
+def test_reduce_money():
+    bank = Bank()
+    result = bank.reduce("USD", source=Money("USD", 1).dollar())
+    assert result == Money("USD", 1).dollar()
+
+def test_reduce_different_currency():
+    bank = Bank()
+    bank.add_rate("RUB", "USD", 70)
+    result = bank.reduce("USD", source=Money("RUB", 70).ruble())
+    assert result == Money("USD", 1).dollar()
+
+def test_reduce_identity_rate():
+    assert 1 == Bank().rate("USD", "USD")
