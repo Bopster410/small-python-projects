@@ -1,5 +1,6 @@
 class Expression():
-    pass
+    def reduce(self, to: str):
+        pass
 
 class Money(Expression):
     def __init__(self, currency, amount=0):
@@ -10,13 +11,16 @@ class Money(Expression):
         return __o._amount == self._amount and self.currency() == __o.currency()
     
     def __add__(self, __o: object) -> Expression:
-        return Money(self.currency(), self._amount + __o._amount)
+        return Sum(self, __o)
     
     def __str__(self) -> str:
         return f"{self._amount} {self._currency}"
     
     def __repr__(self) -> str:
         return self.__str__()
+
+    def amount(self):
+        return self._amount
 
     def currency(self):
         return self._currency
@@ -30,6 +34,18 @@ class Money(Expression):
     def times(self, multiplier):
         return Money(self._currency, self._amount * multiplier)
 
+    def reduce(self, to: str):
+        return self
+
 class Bank():
-    def reduce(self, source: Expression, to: str):
-        return Money("USD", 10).dollar()
+    def reduce(self, to: str, *, source: Expression):
+        return source.reduce(to)
+    
+class Sum(Expression):
+    def __init__(self, augend, addend):
+        self.augend = augend
+        self.addend = addend
+    
+    def reduce(self, to: str):
+        amount = self.augend.amount() + self.addend.amount()
+        return Money(to, amount)
