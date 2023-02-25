@@ -2,6 +2,9 @@ class Expression():
     def reduce(self, to: str, *, bank):
         pass
 
+    def __add__(self, __o: object):
+        pass
+
 class Money(Expression):
     def __init__(self, currency, amount=0):
         self._amount = amount
@@ -31,12 +34,26 @@ class Money(Expression):
     def ruble(self):
         return Money("RUB", self._amount)
 
-    def times(self, multiplier):
+    def times(self, multiplier) -> Expression:
         return Money(self._currency, self._amount * multiplier)
 
     def reduce(self, to: str, *, bank):
         rate = bank.rate(self._currency, to)
         return Money(to, self._amount / rate)
+    
+class Sum(Expression):
+    def __init__(self, augend: Expression, addend: Expression):
+        self.augend = augend
+        self.addend = addend
+    
+    def __add__(self, __o: object) -> Expression:
+        return None
+
+    def reduce(self, to: str, *, bank):
+        amount = self.augend.reduce(to, bank=bank).amount()\
+               + self.addend.reduce(to, bank=bank).amount()
+        return Money(to, amount)
+
 
 class Bank():
     def __init__(self) -> None:
@@ -53,15 +70,6 @@ class Bank():
             return 1
         rate = self.__rates[Pair(initial, to)]
         return rate
-    
-class Sum(Expression):
-    def __init__(self, augend, addend):
-        self.augend = augend
-        self.addend = addend
-    
-    def reduce(self, to: str, *, bank):
-        amount = self.augend.amount() + self.addend.amount()
-        return Money(to, amount)
 
 class Pair():
     def __init__(self, initial: str, to: str) -> None:

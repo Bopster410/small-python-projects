@@ -1,4 +1,4 @@
-from currency import Money, Bank, Sum
+from currency import Money, Bank, Sum, Expression
 
 def test_equals_dollar():
     assert Money("USD", 5).dollar() != Money("USD", 6).dollar()
@@ -47,3 +47,11 @@ def test_reduce_different_currency():
 
 def test_reduce_identity_rate():
     assert 1 == Bank().rate("USD", "USD")
+
+def test_mixed_addition():
+    bucks: Expression = Money("USD", 5).dollar()
+    rubles: Expression = Money("RUB", 140).ruble()
+    bank = Bank()
+    bank.add_rate("RUB", "USD", 70)
+    result = bank.reduce("USD", source=(bucks + rubles))
+    assert result == Money("USD", 7).dollar()
