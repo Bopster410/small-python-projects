@@ -55,3 +55,21 @@ def test_mixed_addition():
     bank.add_rate("RUB", "USD", 70)
     result = bank.reduce("USD", source=(bucks + rubles))
     assert result == Money("USD", 7).dollar()
+
+def test_sum_plus_money():
+    bucks = Money("USD", 4).dollar()
+    rubles = Money("RUB", 210).ruble()
+    bank = Bank()
+    bank.add_rate("RUB", "USD", 70)
+    sum = Sum(bucks, rubles) + bucks
+    result = bank.reduce("USD", source=sum)
+    assert Money("USD", 11) == result
+
+def test_sum_times():
+    bucks = Money("USD", 4).dollar()
+    rubles = Money("RUB", 210).ruble()
+    bank = Bank()
+    bank.add_rate("RUB", "USD", 70)
+    sum = Sum(bucks, rubles).times(2)
+    result = bank.reduce("USD", source=sum)
+    assert Money("USD", 14) == result
