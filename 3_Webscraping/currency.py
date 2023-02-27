@@ -1,6 +1,9 @@
 class Expression():
     def reduce(self, to: str, *, bank):
         pass
+    
+    def times(self, multiplier):
+        pass
 
     def __add__(self, __o: object):
         pass
@@ -47,7 +50,10 @@ class Sum(Expression):
         self.addend = addend
     
     def __add__(self, __o: object) -> Expression:
-        return None
+        return Sum(self, __o)
+
+    def times(self, multiplier):
+        return Sum(self.augend.times(multiplier), self.addend.times(multiplier))
 
     def reduce(self, to: str, *, bank):
         amount = self.augend.reduce(to, bank=bank).amount()\
