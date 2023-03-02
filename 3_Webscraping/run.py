@@ -1,5 +1,5 @@
-from gui import App
+from gui import MoneyApp
 
 if __name__ == '__main__':
-    app = App()
+    app = MoneyApp()
     app.mainloop()
