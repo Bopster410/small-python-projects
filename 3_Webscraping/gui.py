@@ -11,15 +11,19 @@ class MoneyApp(ctk.CTk):
         self.label = ctk.CTkLabel(self, text=f'1 USD == {self.__get_new_currency()} RUB', font=('Arial', 25))
         self.label.place(relx=0.5, rely=0.1, anchor=ctk.CENTER)
 
-        self.entry = ctk.CTkEntry(self, width=100, height=50, corner_radius=8, font=('Arial', 20))
+        self.entry = ctk.CTkEntry(self, width=140, height=50, corner_radius=8, font=('Arial', 20))
         self.entry.place(relx=0.2, rely=0.5)
 
-        self.enter_btn = ctk.CTkButton(self, text='Enter', command=self.enter_event)
+        self.enter_btn = ctk.CTkButton(self, height=50, text='Enter', command=self.enter_event, font=('Arial', 20))
         self.enter_btn.place(relx=0.6, rely=0.5)
+
+        self.output = ctk.CTkLabel(self, width=200, height=50, corner_radius=8, font=('Arial', 20), text='')
+        self.output.place(relx=0.4, rely=0.7)
     
     def enter_event(self):
         input = self.entry.get()
         logging.debug(f'entered value: {input}')
+        self.output.configure(text=str(input))
     
     def __get_new_currency(self):
         selector = 'body > div.layout-wrapper.padding-top-default.bg-white.position-relative \
