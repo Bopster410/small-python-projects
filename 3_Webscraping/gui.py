@@ -12,7 +12,7 @@ class MoneyApp(ctk.CTk):
         self.geometry('500x500')
 
         # Label showing current exchange rate
-        self.exchange_rate_lbl = ctk.CTkLabel(self, text=f'1 USD == {self.__get_new_currency()} RUB', font=('Arial', 25))
+        self.exchange_rate_lbl = ctk.CTkLabel(self, text=f'1 USD == {self.__get_new_exchange_rate()} RUB', font=('Arial', 25))
         self.exchange_rate_lbl.place(relx=0.5, rely=0.1, anchor=ctk.CENTER)
 
         # Input value
@@ -28,13 +28,16 @@ class MoneyApp(ctk.CTk):
         self.result_lbl.place(relx=0.4, rely=0.7)
     
     # Callback for the enter button (enter_btn)
+    # TODO use cache to get exchange rate
+    # TODO regex to validate input
     def enter_event(self):
-        input = self.input_lbl.get()
+        input = float(self.input_lbl.get())
         logging.debug(f'entered value: {input}')
-        self.result_lbl.configure(text=str(input))
+        self.result_lbl.configure(text=f'{round(input * self.__get_new_exchange_rate(), 2)} RUB')
     
     # Returns current usd to rub exchange rate
-    def __get_new_currency(self):
+    # TODO use cache to store exchange rate
+    def __get_new_exchange_rate(self):
         selector = 'body > div.layout-wrapper.padding-top-default.bg-white.position-relative \
 > div.layout-columns-wrapper > main > section:nth-child(5) > div.currency-board__container \
 > div.currency-board > div.currency-board__table > div:nth-child(2) > div > div \
