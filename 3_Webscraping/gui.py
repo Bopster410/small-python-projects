@@ -4,27 +4,36 @@ class MoneyApp(ctk.CTk):
     def __init__(self):
         super().__init__()
 
+        # WebScraper object to get exchange rate
         self.ws = webscraping.WebScaper()
-        self.title = 'Simple test, no need to worry'
+
+        # Window settings
+        self.title('Simple test, no need to worry')
         self.geometry('500x500')
 
-        self.label = ctk.CTkLabel(self, text=f'1 USD == {self.__get_new_currency()} RUB', font=('Arial', 25))
-        self.label.place(relx=0.5, rely=0.1, anchor=ctk.CENTER)
+        # Label showing current exchange rate
+        self.exchange_rate_lbl = ctk.CTkLabel(self, text=f'1 USD == {self.__get_new_currency()} RUB', font=('Arial', 25))
+        self.exchange_rate_lbl.place(relx=0.5, rely=0.1, anchor=ctk.CENTER)
 
-        self.entry = ctk.CTkEntry(self, width=140, height=50, corner_radius=8, font=('Arial', 20))
-        self.entry.place(relx=0.2, rely=0.5)
+        # Input value
+        self.input_lbl = ctk.CTkEntry(self, width=140, height=50, corner_radius=8, font=('Arial', 20))
+        self.input_lbl.place(relx=0.2, rely=0.5)
 
+        # Button to show the result
         self.enter_btn = ctk.CTkButton(self, height=50, text='Enter', command=self.enter_event, font=('Arial', 20))
         self.enter_btn.place(relx=0.6, rely=0.5)
 
-        self.output = ctk.CTkLabel(self, width=200, height=50, corner_radius=8, font=('Arial', 20), text='')
-        self.output.place(relx=0.4, rely=0.7)
+        # Result label
+        self.result_lbl = ctk.CTkLabel(self, width=200, height=50, corner_radius=8, font=('Arial', 20), text='')
+        self.result_lbl.place(relx=0.4, rely=0.7)
     
+    # Callback for the enter button (enter_btn)
     def enter_event(self):
-        input = self.entry.get()
+        input = self.input_lbl.get()
         logging.debug(f'entered value: {input}')
-        self.output.configure(text=str(input))
+        self.result_lbl.configure(text=str(input))
     
+    # Returns current usd to rub exchange rate
     def __get_new_currency(self):
         selector = 'body > div.layout-wrapper.padding-top-default.bg-white.position-relative \
 > div.layout-columns-wrapper > main > section:nth-child(5) > div.currency-board__container \
