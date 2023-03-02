@@ -13,7 +13,6 @@ class MoneyApp(ctk.CTk):
 
         self.text_box = ctk.CTkTextbox(self, width=100, height=50, corner_radius=8, font=('Arial', 20))
         self.text_box.place(relx=0.2, rely=0.5, anchor=ctk.CENTER)
-        self.text_box.insert('0.0', 'USD')
     
     def __get_new_currency(self):
         selector = 'body > div.layout-wrapper.padding-top-default.bg-white.position-relative \
