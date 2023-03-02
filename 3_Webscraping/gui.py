@@ -1,4 +1,4 @@
-import customtkinter as ctk, webscraping
+import customtkinter as ctk, webscraping, logging
 
 class MoneyApp(ctk.CTk):
     def __init__(self):
@@ -18,7 +18,8 @@ class MoneyApp(ctk.CTk):
         self.enter_btn.place(relx=0.6, rely=0.5)
     
     def enter_event(self):
-        print(self.entry.get())
+        input = self.entry.get()
+        logging.debug(f'entered value: {input}')
     
     def __get_new_currency(self):
         selector = 'body > div.layout-wrapper.padding-top-default.bg-white.position-relative \
@@ -31,5 +32,6 @@ class MoneyApp(ctk.CTk):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(filename='gui.log', filemode='w', level=logging.INFO, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
     app = MoneyApp()
     app.mainloop()
