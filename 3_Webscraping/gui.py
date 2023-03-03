@@ -1,4 +1,4 @@
-import customtkinter as ctk, webscraping, logging
+import customtkinter as ctk, webscraping, logging  
 
 class MoneyApp(ctk.CTk):
     def __init__(self):
@@ -13,18 +13,22 @@ class MoneyApp(ctk.CTk):
 
         # Label showing current exchange rate
         self.exchange_rate_lbl = ctk.CTkLabel(self, text=f'1 USD == {self.__get_new_exchange_rate()} RUB', font=('Arial', 25))
-        self.exchange_rate_lbl.place(relx=0.5, rely=0.1, anchor=ctk.CENTER)
+        self.exchange_rate_lbl.pack(pady=30)
+
+        # Frame with converter
+        self.converter_frame = ctk.CTkFrame(self, width=450, height=350)
+        self.converter_frame.pack()
 
         # Input value
-        self.input_lbl = ctk.CTkEntry(self, width=140, height=50, corner_radius=8, font=('Arial', 20))
+        self.input_lbl = ctk.CTkEntry(self.converter_frame, width=140, height=50, corner_radius=8, font=('Arial', 20))
         self.input_lbl.place(relx=0.2, rely=0.5)
 
         # Button to show the result
-        self.enter_btn = ctk.CTkButton(self, height=50, text='Enter', command=self.enter_event, font=('Arial', 20))
+        self.enter_btn = ctk.CTkButton(self.converter_frame, height=50, text='Enter', command=self.enter_event, font=('Arial', 20))
         self.enter_btn.place(relx=0.6, rely=0.5)
 
         # Result label
-        self.result_lbl = ctk.CTkLabel(self, width=200, height=50, corner_radius=8, font=('Arial', 20), text='')
+        self.result_lbl = ctk.CTkLabel(self.converter_frame, width=200, height=50, corner_radius=8, font=('Arial', 20), text='')
         self.result_lbl.place(relx=0.4, rely=0.7)
     
     # Callback for the enter button (enter_btn)
