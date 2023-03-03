@@ -1,21 +1,30 @@
 import customtkinter as ctk, webscraping, logging  
 
-
+# Currency converter frame
 class ConverterFrame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
+        # Configure grid
+        self.grid_columnconfigure((0, 1), weight=1)
+        self.grid_columnconfigure(2, weight=2)
+
         # Input value
-        self.input_lbl = ctk.CTkEntry(self, width=140, height=50, corner_radius=8, font=('Arial', 20))
-        self.input_lbl.place(relx=0.2, rely=0.5)
+        self.input_lbl = ctk.CTkEntry(self, corner_radius=8, font=('Arial', 20))
+        self.input_lbl.grid(row=0, column=0, padx=20, pady=10, sticky='ewsn')
+
+        # Shows initial currency
+        self.currency_lbl = ctk.CTkLabel(self, font=('Arial', 20), text='USD')
+        self.currency_lbl.grid(row=0, column=1, sticky='w')
 
         # Button to show the result
         self.enter_btn = ctk.CTkButton(self, height=50, text='Enter', command=self.enter_event, font=('Arial', 20))
-        self.enter_btn.place(relx=0.6, rely=0.5)
+        self.enter_btn.grid(row=0, column=2, padx=20, pady=10, sticky='esn')
 
         # Result label
-        self.result_lbl = ctk.CTkLabel(self, width=200, height=50, corner_radius=8, font=('Arial', 20), text='')
-        self.result_lbl.place(relx=0.4, rely=0.7)
+        self.result_lbl = ctk.CTkLabel(self, width=200, height=50, font=('Arial', 20), text='')
+        self.result_lbl.grid(row=1, column=0, columnspan=3, pady=20, sticky='ew')
+
 
     # Callback for the enter button (enter_btn)
     # TODO use cache to get exchange rate
@@ -35,15 +44,20 @@ class MoneyApp(ctk.CTk):
 
         # Window settings
         self.title('Simple test, no need to worry')
-        self.geometry('500x500')
+        self.geometry('700x500')
+
+        # Configure grid
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=3)
 
         # Label showing current exchange rate
         self.exchange_rate_lbl = ctk.CTkLabel(self, text=f'1 USD == {get_new_exchange_rate()} RUB', font=('Arial', 25))
-        self.exchange_rate_lbl.pack(pady=30)
+        self.exchange_rate_lbl.grid(column=0, row=0, sticky="ew")
 
         # Frame with converter
-        self.converter_frame = ConverterFrame(self, width=450, height=400)
-        self.converter_frame.pack()
+        self.converter_frame = ConverterFrame(self)
+        self.converter_frame.grid(column=0, row=1, padx=20, pady=10, sticky="nsew")
 
 
 # Returns current usd to rub exchange rate
