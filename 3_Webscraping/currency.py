@@ -30,12 +30,6 @@ class Money(Expression):
 
     def currency(self):
         return self._currency
-    
-    def dollar(self):
-        return Money("USD", self._amount)
-    
-    def ruble(self):
-        return Money("RUB", self._amount)
 
     def times(self, multiplier) -> Expression:
         return Money(self._currency, self._amount * multiplier)
