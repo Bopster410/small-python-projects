@@ -14,8 +14,17 @@ class WebScaper():
         return text
     
     def find(self, src, selector):
-        html = self.get_html(src)
-        result = html.select(selector)
+        result = None
+        with shelve.open('WebScraper_cache') as cache_db:
+            db_tag = 'bob'
+            try:
+                html = self.get_html(src)
+                result = html.select(selector)[0].get_text()
+                cache_db[db_tag] = result
+            except requests.exceptions.ConnectionError:
+                if db_tag in cache_db.keys():
+                    result = cache_db[db_tag]
+                    
         return result
 
 class WebPages():

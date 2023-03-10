@@ -69,7 +69,11 @@ def get_new_exchange_rate():
 > div.layout-columns-wrapper > main > section:nth-child(5) > div.currency-board__container \
 > div.currency-board > div.currency-board__table > div:nth-child(2) > div > div \
 > div.currency-board__field > div.currency-board__slot__value > span.currency-board__value.display-inline-block'
-    rubles = float(ws.find('https://www.banki.ru/products/currency/rub/', selector)[0].get_text().replace(',', '.'))
+    web_scraping_result = ws.find('https://www.banki.ru/products/currency/rub/', selector)
+    if web_scraping_result != None:
+        rubles = float(web_scraping_result.replace(',', '.'))
+    else:
+        rubles = 10.1
     # rubles = 75.5
     return rubles
 
