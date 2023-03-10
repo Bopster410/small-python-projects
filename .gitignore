@@ -3,5 +3,6 @@
 **/venv
 *.log
 user_data.*
+WebScraper_cache.*
 .vscode/
 *.code-workspace

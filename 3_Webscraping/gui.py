@@ -73,7 +73,7 @@ def get_new_exchange_rate():
     if web_scraping_result != None:
         rubles = float(web_scraping_result.replace(',', '.'))
     else:
-        rubles = 10.1
+        rubles = 0
     # rubles = 75.5
     return rubles
 
