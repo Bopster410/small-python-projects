@@ -1,4 +1,4 @@
-import customtkinter as ctk, webscraping, logging  
+import customtkinter as ctk, webscraping, logging, currency
 
 # Currency converter frame
 class ConverterFrame(ctk.CTkFrame):
@@ -25,22 +25,23 @@ class ConverterFrame(ctk.CTkFrame):
         self.result_lbl = ctk.CTkLabel(self, width=200, height=50, font=('Arial', 20), text='')
         self.result_lbl.grid(row=1, column=0, columnspan=3, pady=20, sticky='ew')
 
+        self.bank = currency.Bank()
+        self.bank.add_rate('USD', 'RUB', 1 / get_new_exchange_rate())
+
 
     # Callback for the enter button (enter_btn)
     # TODO use cache to get exchange rate
     # TODO regex to validate input
     def enter_event(self):
-        input = float(self.input_lbl.get())
-        logging.debug(f'entered value: {input}')
-        self.result_lbl.configure(text=f'{round(input * get_new_exchange_rate(), 2)} RUB')
+        input = currency.Money('USD', int(self.input_lbl.get()))
+        logging.debug(f'entered value: {input.amount()}')
+        output = input.reduce('RUB', bank=self.bank)
+        self.result_lbl.configure(text=f'{output}')
 
 
 class MoneyApp(ctk.CTk):
     def __init__(self):
         super().__init__()
-
-        # WebScraper object to get exchange rate
-        self.ws = webscraping.WebScaper()
 
         # Window settings
         self.title('Simple test, no need to worry')
@@ -63,12 +64,13 @@ class MoneyApp(ctk.CTk):
 # Returns current usd to rub exchange rate
 # TODO use cache to store exchange rate
 def get_new_exchange_rate():
+    ws = webscraping.WebScaper()
     selector = 'body > div.layout-wrapper.padding-top-default.bg-white.position-relative \
 > div.layout-columns-wrapper > main > section:nth-child(5) > div.currency-board__container \
 > div.currency-board > div.currency-board__table > div:nth-child(2) > div > div \
 > div.currency-board__field > div.currency-board__slot__value > span.currency-board__value.display-inline-block'
-    # rubles = float(self.ws.find('https://www.banki.ru/products/currency/rub/', selector)[0].get_text().replace(',', '.'))
-    rubles = 75.5
+    rubles = float(ws.find('https://www.banki.ru/products/currency/rub/', selector)[0].get_text().replace(',', '.'))
+    # rubles = 75.5
     return rubles
 
 
