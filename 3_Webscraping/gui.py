@@ -14,8 +14,10 @@ class ConverterFrame(ctk.CTkFrame):
         self.input_lbl.grid(row=0, column=0, padx=20, pady=10, sticky='ewsn')
 
         # Shows initial currency
-        self.currency_lbl = ctk.CTkLabel(self, font=('Arial', 20), text='USD')
-        self.currency_lbl.grid(row=0, column=1, sticky='w')
+        self.currency_menu = ctk.CTkOptionMenu(self, values=['USD', 'RUB'], command=self.currency_menu_event)
+        self.currency_menu.grid(row=0, column=1, sticky='w')
+        # self.currency_lbl = ctk.CTkLabel(self, font=('Arial', 20), text='USD')
+        # self.currency_lbl.grid(row=0, column=1, sticky='w')
 
         # Button to show the result
         self.enter_btn = ctk.CTkButton(self, height=50, text='Enter', command=self.enter_event, font=('Arial', 20))
@@ -37,6 +39,9 @@ class ConverterFrame(ctk.CTkFrame):
         logging.debug(f'entered value: {input.amount()}')
         output = input.reduce('RUB', bank=self.bank)
         self.result_lbl.configure(text=f'{output}')
+    
+    def currency_menu_event(self, currency):
+        logging.debug('Option menu clicked: ' + currency)
 
 
 class MoneyApp(ctk.CTk):
