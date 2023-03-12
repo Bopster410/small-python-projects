@@ -16,9 +16,7 @@ class ConverterFrame(ctk.CTkFrame):
         # Shows initial currency
         self.currency_menu = ctk.CTkOptionMenu(self, values=['USD', 'RUB'], command=self.currency_menu_event)
         self.currency_menu.grid(row=0, column=1, sticky='w')
-        # self.currency_lbl = ctk.CTkLabel(self, font=('Arial', 20), text='USD')
-        # self.currency_lbl.grid(row=0, column=1, sticky='w')
-
+        
         # Button to show the result
         self.enter_btn = ctk.CTkButton(self, height=50, text='Enter', command=self.enter_event, font=('Arial', 20))
         self.enter_btn.grid(row=0, column=2, padx=20, pady=10, sticky='esn')
