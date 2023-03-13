@@ -28,7 +28,7 @@ class ConverterFrame(ctk.CTkFrame):
         self.result_lbl = ctk.CTkLabel(self, width=200, height=50, font=('Arial', 20), text='')
         self.result_lbl.grid(row=1, column=0, columnspan=3, pady=20, sticky='ew')
         
-
+        # Bank for currency conversion
         self.bank = currency.Bank()
         self.bank.add_rate('USD', 'RUB', 1 / get_new_exchange_rate())
         self.bank.add_rate('RUB', 'USD', get_new_exchange_rate())
@@ -38,9 +38,9 @@ class ConverterFrame(ctk.CTkFrame):
     # TODO use cache to get exchange rate
     # TODO regex to validate input
     def enter_event(self):
-        input = currency.Money('USD', int(self.input_lbl.get()))
+        input = currency.Money(self.currency_menu_input.get(), int(self.input_lbl.get()))
         logging.debug(f'entered value: {input.amount()}')
-        output = input.reduce('RUB', bank=self.bank)
+        output = input.reduce(self.currency_menu_output.get(), bank=self.bank)
         self.result_lbl.configure(text=f'{output}')
     
     def currency_menu_event(self, currency):
