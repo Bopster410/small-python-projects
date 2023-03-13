@@ -19,14 +19,11 @@ class ConverterFrame(ctk.CTkFrame):
         self.enter_btn.grid(row=0, column=2, padx=20, pady=10, rowspan=2, sticky='esn')
         # Input value
         self.input_entry = ctk.CTkEntry(self, height=50, corner_radius=8, font=('Arial', 20))
-        self.input_entry.grid(row=1, column=0, padx=20, pady=10 , sticky='ewsn')
-
-        
-        
-        
+        self.input_entry.grid(row=1, column=0, padx=20, pady=10 , sticky='ewsn')        
 
         # Result label
-        self.result_lbl = ctk.CTkLabel(self,  font=('Arial', 20), text='')
+        self.result_value = ctk.StringVar()
+        self.result_lbl = ctk.CTkLabel(self,  font=('Arial', 20), textvariable=self.result_value)
         self.result_lbl.grid(row=1, column=1, sticky='ew')
         
         # Bank for currency conversion
@@ -42,7 +39,7 @@ class ConverterFrame(ctk.CTkFrame):
         input = currency.Money(self.currency_menu_input.get(), int(self.input_entry.get()))
         logging.debug(f'entered value: {input.amount()}')
         output = input.reduce(self.currency_menu_output.get(), bank=self.bank)
-        self.result_lbl.configure(text=f'{output}')
+        self.result_value.set(output)
     
     def currency_menu_event(self, currency):
         logging.debug('Option menu clicked: ' + currency)
