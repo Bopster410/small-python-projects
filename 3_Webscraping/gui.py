@@ -43,7 +43,7 @@ class ConverterFrame(ctk.CTkFrame):
         input_val_str = self.input_entry.get()
         if not input_val_str:
             input_val_str = '0'
-        input = currency.Money(self.currency_menu_input.get(), int(input_val_str))
+        input = currency.Money(self.currency_menu_input.get(), float(input_val_str))
         logging.debug(f'entered value: {input.amount()}')
         output = input.reduce(self.currency_menu_output.get(), bank=self.bank)
         self.result_value.set(output)
