@@ -8,22 +8,26 @@ class ConverterFrame(ctk.CTkFrame):
         # Configure grid
         self.grid_columnconfigure((0, 1), weight=1)
         self.grid_columnconfigure(2, weight=2)
-# Input currency
+
+        # Input currency
         self.currency_menu_input = ctk.CTkOptionMenu(self, values=['USD', 'RUB'], command=self.currency_menu_event)
-        self.currency_menu_input.grid(row=0, column=0, padx=20, pady=10, sticky='w')
-# Output currency
+        self.currency_menu_input.grid(row=0, column=0, padx=20, pady=10, sticky='we')
+
+        # Output currency
         self.currency_menu_output = ctk.CTkOptionMenu(self, values=['RUB', 'USD' ], command=self.currency_menu_event)
-        self.currency_menu_output.grid(row=0, column=1, pady=20,  sticky='w')
+        self.currency_menu_output.grid(row=0, column=1, pady=20,  sticky='we')
+
         # Button to show the result
         self.enter_btn = ctk.CTkButton(self, height=50, text='Enter', command=self.enter_event, font=('Arial', 20))
         self.enter_btn.grid(row=0, column=2, padx=20, pady=10, rowspan=2, sticky='esn')
+        
         # Input value
         self.input_entry = ctk.CTkEntry(self, height=50, corner_radius=8, font=('Arial', 20))
         self.input_entry.grid(row=1, column=0, padx=20, pady=10 , sticky='ewsn')        
 
         # Result label
-        self.result_value = ctk.StringVar()
-        self.result_lbl = ctk.CTkLabel(self,  font=('Arial', 20), textvariable=self.result_value)
+        self.result_value = ctk.StringVar(value='result')
+        self.result_lbl = ctk.CTkLabel(self,  font=('Arial', 20), fg_color=('white', 'black'), height=50, corner_radius=8, textvariable=self.result_value)
         self.result_lbl.grid(row=1, column=1, sticky='ew')
         
         # Bank for currency conversion
