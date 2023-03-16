@@ -1,4 +1,4 @@
-import customtkinter as ctk, webscraping, logging, currency
+import customtkinter as ctk, webscraping, logging, currency, re
 
 # Currency converter frame
 class ConverterFrame(ctk.CTkFrame):
@@ -9,34 +9,67 @@ class ConverterFrame(ctk.CTkFrame):
         self.grid_columnconfigure((0, 1), weight=1)
         self.grid_columnconfigure(2, weight=2)
 
-        # Input value
-        self.input_lbl = ctk.CTkEntry(self, corner_radius=8, font=('Arial', 20))
-        self.input_lbl.grid(row=0, column=0, padx=20, pady=10, sticky='ewsn')
+        # Input currency
+        self.currency_menu_input = ctk.CTkOptionMenu(self, values=['USD', 'RUB'], command=self.currency_menu_event)
+        self.currency_menu_input.grid(row=0, column=0, padx=20, pady=10, sticky='we')
 
-        # Shows initial currency
-        self.currency_lbl = ctk.CTkLabel(self, font=('Arial', 20), text='USD')
-        self.currency_lbl.grid(row=0, column=1, sticky='w')
+        # Output currency
+        self.currency_menu_output = ctk.CTkOptionMenu(self, values=['RUB', 'USD' ], command=self.currency_menu_event)
+        self.currency_menu_output.grid(row=0, column=1, pady=20,  sticky='we')
 
         # Button to show the result
         self.enter_btn = ctk.CTkButton(self, height=50, text='Enter', command=self.enter_event, font=('Arial', 20))
-        self.enter_btn.grid(row=0, column=2, padx=20, pady=10, sticky='esn')
+        self.enter_btn.grid(row=0, column=2, padx=20, pady=10, rowspan=2, sticky='esn')
+        
+        # Input value
+        # vcmd = (self.register(self.validate_input), '%s')
+        # ivcmd = (self.register(self.on_invalid_input), )
+        self.input_entry = ctk.CTkEntry(self, height=50, corner_radius=8, font=('Arial', 20))
+        # self.input_entry.configure(validate='focusout', validatecommand=vcmd, invalidcommand=ivcmd)
+        self.input_entry.grid(row=1, column=0, padx=20, pady=10 , sticky='ewsn')        
 
         # Result label
-        self.result_lbl = ctk.CTkLabel(self, width=200, height=50, font=('Arial', 20), text='')
-        self.result_lbl.grid(row=1, column=0, columnspan=3, pady=20, sticky='ew')
+        self.result_value = ctk.StringVar(value='result')
+        self.result_lbl = ctk.CTkLabel(self,  font=('Arial', 20), fg_color=('white', 'black'), height=50, corner_radius=8, textvariable=self.result_value)
+        self.result_lbl.grid(row=1, column=1, sticky='ew')
 
+        # Error label
+        self.error_value = ctk.StringVar()
+        self.error_lbl = ctk.CTkLabel(self, font=('Arial', 20), textvariable=self.error_value)
+        self.error_lbl.grid(row=2, column=0, columnspan=3)
+        
+        # Bank for currency conversion
         self.bank = currency.Bank()
         self.bank.add_rate('USD', 'RUB', 1 / get_new_exchange_rate())
+        self.bank.add_rate('RUB', 'USD', get_new_exchange_rate())
 
 
     # Callback for the enter button (enter_btn)
-    # TODO use cache to get exchange rate
     # TODO regex to validate input
     def enter_event(self):
-        input = currency.Money('USD', int(self.input_lbl.get()))
-        logging.debug(f'entered value: {input.amount()}')
-        output = input.reduce('RUB', bank=self.bank)
-        self.result_lbl.configure(text=f'{output}')
+        input_val_str = self.input_entry.get()
+
+        if self.validate_input(input_val_str):
+            self.error_value.set('')
+            input = currency.Money(self.currency_menu_input.get(), float(input_val_str))
+            logging.debug(f'entered value: {input.amount()}')
+            output = input.reduce(self.currency_menu_output.get(), bank=self.bank)
+            self.result_value.set(output)
+
+        else:
+            self.on_invalid_input()
+
+    
+    def validate_input(self, input):
+        result = re.fullmatch(r'\d+(\.{1}\d+)?', input)
+        return result != None
+
+    def on_invalid_input(self):
+        logging.debug('Wrong value!')
+        self.error_value.set('Wrong input value!')
+
+    def currency_menu_event(self, currency):
+        logging.debug('Option menu clicked: ' + currency)
 
 
 class MoneyApp(ctk.CTk):
