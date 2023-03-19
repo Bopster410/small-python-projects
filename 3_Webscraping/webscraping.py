@@ -1,6 +1,6 @@
 import logging, webbrowser, shelve, bs4, requests
 
-class WebScaper():
+class WebScraper():
     def __init__(self):
         logging.info("WebScraper object has been created")
     
@@ -26,6 +26,9 @@ class WebScaper():
                     result = cache_db[db_tag]
                     
         return result
+
+    def use_api(self):
+        pass
 
 class WebPages():
     def __init__(self):
@@ -55,5 +58,5 @@ class WebPages():
 
 if __name__ == '__main__':
     logging.basicConfig(filename='files.log', filemode='w', level=logging.INFO, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
-    ws = WebScaper()
+    ws = WebScraper()
     print(ws.get_html('https://www.banki.ru/products/currency/rub/'))
