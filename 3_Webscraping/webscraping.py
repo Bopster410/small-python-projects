@@ -3,6 +3,7 @@ import logging, webbrowser, shelve, bs4, requests
 class WebScraper():
     def __init__(self):
         logging.info("WebScraper object has been created")
+        self.api_key = 'kyQLr1wkOlVUFlyR0wApjQFUCGarFNVh'
     
     def get_html(self, name, local=False):
         if local:
@@ -27,8 +28,9 @@ class WebScraper():
                     
         return result
 
-    def use_api(self):
-        pass
+    def use_api(self, url, params):
+        respons = requests.request('GET', url, headers={'apikey': self.api_key}, params=params)
+        return respons
 
 class WebPages():
     def __init__(self):
