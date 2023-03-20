@@ -22,10 +22,7 @@ class ConverterFrame(ctk.CTkFrame):
         self.enter_btn.grid(row=0, column=2, padx=20, pady=10, rowspan=2, sticky='esn')
         
         # Input value
-        # vcmd = (self.register(self.validate_input), '%s')
-        # ivcmd = (self.register(self.on_invalid_input), )
         self.input_entry = ctk.CTkEntry(self, height=50, corner_radius=8, font=('Arial', 20))
-        # self.input_entry.configure(validate='focusout', validatecommand=vcmd, invalidcommand=ivcmd)
         self.input_entry.grid(row=1, column=0, padx=20, pady=10 , sticky='ewsn')        
 
         # Result label
@@ -45,7 +42,6 @@ class ConverterFrame(ctk.CTkFrame):
 
 
     # Callback for the enter button (enter_btn)
-    # TODO regex to validate input
     def enter_event(self):
         input_val_str = self.input_entry.get()
 
@@ -97,16 +93,20 @@ class MoneyApp(ctk.CTk):
 # Returns current usd to rub exchange rate
 # TODO use cache to store exchange rate
 def get_new_exchange_rate():
-    ws = webscraping.WebScaper()
-    selector = 'body > div.layout-wrapper.padding-top-default.bg-white.position-relative \
-> div.layout-columns-wrapper > main > section:nth-child(5) > div.currency-board__container \
-> div.currency-board > div.currency-board__table > div:nth-child(2) > div > div \
-> div.currency-board__field > div.currency-board__slot__value > span.currency-board__value.display-inline-block'
-    web_scraping_result = ws.find('https://www.banki.ru/products/currency/rub/', selector)
-    if web_scraping_result != None:
-        rubles = float(web_scraping_result.replace(',', '.'))
-    else:
-        rubles = 0
+#     selector = 'body > div.layout-wrapper.padding-top-default.bg-white.position-relative \
+# > div.layout-columns-wrapper > main > section:nth-child(5) > div.currency-board__container \
+# > div.currency-board > div.currency-board__table > div:nth-child(2) > div > div \
+# > div.currency-board__field > div.currency-board__slot__value > span.currency-board__value.display-inline-block'
+#     web_scraping_result = ws.find('https://www.banki.ru/products/currency/rub/', selector)
+#     if web_scraping_result != None:
+#         rubles = float(web_scraping_result.replace(',', '.'))
+#     else:
+#         rubles = 0
+    ws = webscraping.WebScraper()
+    url = 'https://api.apilayer.com/fixer/latest'
+    params = {'base': 'USD', 'symbols': 'RUB'}
+    result = ws.use_api(url, params)
+    rubles = round(result.json()['rates']['RUB'], 2)
     # rubles = 75.5
     return rubles
 

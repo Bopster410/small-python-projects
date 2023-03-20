@@ -1,8 +1,9 @@
 import logging, webbrowser, shelve, bs4, requests
 
-class WebScaper():
+class WebScraper():
     def __init__(self):
         logging.info("WebScraper object has been created")
+        self.api_key = 'kyQLr1wkOlVUFlyR0wApjQFUCGarFNVh'
     
     def get_html(self, name, local=False):
         if local:
@@ -26,6 +27,18 @@ class WebScaper():
                     result = cache_db[db_tag]
                     
         return result
+
+    def use_api(self, url, params):
+        with shelve.open('WebScraper_cache') as cache_db:
+            db_tag = ''.join((url, ''.join(params)))
+            if db_tag in cache_db.keys():
+                respons = cache_db[db_tag]
+                logging.info('api respons from cache was taken')
+            else:
+                respons = requests.request('GET', url, headers={'apikey': self.api_key}, params=params)
+                cache_db[db_tag] = respons
+                logging.info('api was used')
+        return respons
 
 class WebPages():
     def __init__(self):
@@ -55,5 +68,5 @@ class WebPages():
 
 if __name__ == '__main__':
     logging.basicConfig(filename='files.log', filemode='w', level=logging.INFO, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
-    ws = WebScaper()
+    ws = WebScraper()
     print(ws.get_html('https://www.banki.ru/products/currency/rub/'))
