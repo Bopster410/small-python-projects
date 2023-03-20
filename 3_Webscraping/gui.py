@@ -93,16 +93,20 @@ class MoneyApp(ctk.CTk):
 # Returns current usd to rub exchange rate
 # TODO use cache to store exchange rate
 def get_new_exchange_rate():
+#     selector = 'body > div.layout-wrapper.padding-top-default.bg-white.position-relative \
+# > div.layout-columns-wrapper > main > section:nth-child(5) > div.currency-board__container \
+# > div.currency-board > div.currency-board__table > div:nth-child(2) > div > div \
+# > div.currency-board__field > div.currency-board__slot__value > span.currency-board__value.display-inline-block'
+#     web_scraping_result = ws.find('https://www.banki.ru/products/currency/rub/', selector)
+#     if web_scraping_result != None:
+#         rubles = float(web_scraping_result.replace(',', '.'))
+#     else:
+#         rubles = 0
     ws = webscraping.WebScraper()
-    selector = 'body > div.layout-wrapper.padding-top-default.bg-white.position-relative \
-> div.layout-columns-wrapper > main > section:nth-child(5) > div.currency-board__container \
-> div.currency-board > div.currency-board__table > div:nth-child(2) > div > div \
-> div.currency-board__field > div.currency-board__slot__value > span.currency-board__value.display-inline-block'
-    web_scraping_result = ws.find('https://www.banki.ru/products/currency/rub/', selector)
-    if web_scraping_result != None:
-        rubles = float(web_scraping_result.replace(',', '.'))
-    else:
-        rubles = 0
+    url = 'https://api.apilayer.com/fixer/latest'
+    params = {'base': 'USD', 'symbols': 'RUB'}
+    result = ws.use_api(url, params)
+    rubles = round(result.json()['rates']['RUB'], 2)
     # rubles = 75.5
     return rubles
 
