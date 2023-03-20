@@ -29,7 +29,15 @@ class WebScraper():
         return result
 
     def use_api(self, url, params):
-        respons = requests.request('GET', url, headers={'apikey': self.api_key}, params=params)
+        with shelve.open('WebScraper_cache') as cache_db:
+            db_tag = ''.join((url, ''.join(params)))
+            if db_tag in cache_db.keys():
+                respons = cache_db[db_tag]
+                logging.info('api respons from cache was taken')
+            else:
+                respons = requests.request('GET', url, headers={'apikey': self.api_key}, params=params)
+                cache_db[db_tag] = respons
+                logging.info('api was used')
         return respons
 
 class WebPages():
