@@ -10,7 +10,8 @@ class ConverterFrame(ctk.CTkFrame):
         self.grid_columnconfigure(2, weight=2)
 
         # Label showing current exchange rate
-        self.exchange_rate_lbl = ctk.CTkLabel(self, text=f'1 USD == {get_new_exchange_rate()} RUB', font=('Arial', 25))
+        self.exchange_rate_value = ctk.StringVar(value=f'1 USD == {get_new_exchange_rate()} RUB')
+        self.exchange_rate_lbl = ctk.CTkLabel(self, font=('Arial', 25), textvariable=self.exchange_rate_value)
         self.exchange_rate_lbl.grid(column=0, row=0, columnspan=2, pady=10, sticky='ew')
 
         # Button to update current exchange rate
@@ -66,6 +67,7 @@ class ConverterFrame(ctk.CTkFrame):
     # Updates current rate when button update_rate_btn is clicked
     def update_rate_event(self):
         logging.debug('Update button was clicked')
+        self.exchange_rate_value.set(f'1 USD == {get_new_exchange_rate(cache=False)} RUB')
 
     
     def validate_input(self, input):
@@ -105,7 +107,7 @@ class MoneyApp(ctk.CTk):
 
 # Returns current usd to rub exchange rate
 # TODO use cache to store exchange rate
-def get_new_exchange_rate():
+def get_new_exchange_rate(cache=True):
 #     selector = 'body > div.layout-wrapper.padding-top-default.bg-white.position-relative \
 # > div.layout-columns-wrapper > main > section:nth-child(5) > div.currency-board__container \
 # > div.currency-board > div.currency-board__table > div:nth-child(2) > div > div \
@@ -118,7 +120,7 @@ def get_new_exchange_rate():
     ws = webscraping.WebScraper()
     url = 'https://api.apilayer.com/fixer/latest'
     params = {'base': 'USD', 'symbols': 'RUB'}
-    result = ws.use_api(url, params)
+    result = ws.use_api(url, params, cache)
     rubles = round(result.json()['rates']['RUB'], 2)
     # rubles = 75.5
     return rubles

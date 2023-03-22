@@ -28,10 +28,10 @@ class WebScraper():
                     
         return result
 
-    def use_api(self, url, params):
+    def use_api(self, url, params, cache=True):
         with shelve.open('WebScraper_cache') as cache_db:
             db_tag = ''.join((url, ''.join(params)))
-            if db_tag in cache_db.keys():
+            if db_tag in cache_db.keys() and cache:
                 respons = cache_db[db_tag]
                 logging.info('api respons from cache was taken')
             else:
