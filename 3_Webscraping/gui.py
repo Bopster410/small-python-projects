@@ -82,7 +82,7 @@ class MoneyApp(ctk.CTk):
         self.grid_rowconfigure(1, weight=3)
 
         # Label showing current exchange rate
-        self.exchange_rate_lbl = ctk.CTkLabel(self, text=f'1 USD == {get_new_exchange_rate()} RUB', font=('Arial', 25))
+        self.exchange_rate_lbl = ctk.CTkLabel(self, text='Money app!', font=('Arial', 25))
         self.exchange_rate_lbl.grid(column=0, row=0, sticky="ew")
 
         # Frame with converter
