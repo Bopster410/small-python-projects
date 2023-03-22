@@ -11,7 +11,11 @@ class ConverterFrame(ctk.CTkFrame):
 
         # Label showing current exchange rate
         self.exchange_rate_lbl = ctk.CTkLabel(self, text=f'1 USD == {get_new_exchange_rate()} RUB', font=('Arial', 25))
-        self.exchange_rate_lbl.grid(column=0, row=0, columnspan=3, pady=10, sticky="ew")
+        self.exchange_rate_lbl.grid(column=0, row=0, columnspan=2, pady=10, sticky='ew')
+
+        # Button to update current exchange rate
+        self.update_rate_btn = ctk.CTkButton(self, height=30, text='Update', command=self.update_rate_event)
+        self.update_rate_btn.grid(column=2, row=0, padx=20, sticky='e')
 
         # Input currency
         self.currency_menu_input = ctk.CTkOptionMenu(self, values=['USD', 'RUB'], command=self.currency_menu_event)
@@ -58,6 +62,10 @@ class ConverterFrame(ctk.CTkFrame):
 
         else:
             self.on_invalid_input()
+
+    # Updates current rate when button update_rate_btn is clicked
+    def update_rate_event(self):
+        logging.debug('Update button was clicked')
 
     
     def validate_input(self, input):
