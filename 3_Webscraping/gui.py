@@ -9,31 +9,35 @@ class ConverterFrame(ctk.CTkFrame):
         self.grid_columnconfigure((0, 1), weight=1)
         self.grid_columnconfigure(2, weight=2)
 
+        # Label showing current exchange rate
+        self.exchange_rate_lbl = ctk.CTkLabel(self, text=f'1 USD == {get_new_exchange_rate()} RUB', font=('Arial', 25))
+        self.exchange_rate_lbl.grid(column=0, row=0, columnspan=3, pady=10, sticky="ew")
+
         # Input currency
         self.currency_menu_input = ctk.CTkOptionMenu(self, values=['USD', 'RUB'], command=self.currency_menu_event)
-        self.currency_menu_input.grid(row=0, column=0, padx=20, pady=10, sticky='we')
+        self.currency_menu_input.grid(row=1, column=0, padx=20, pady=10, sticky='we')
 
         # Output currency
         self.currency_menu_output = ctk.CTkOptionMenu(self, values=['RUB', 'USD' ], command=self.currency_menu_event)
-        self.currency_menu_output.grid(row=0, column=1, pady=20,  sticky='we')
+        self.currency_menu_output.grid(row=1, column=1, pady=20,  sticky='we')
 
         # Button to show the result
         self.enter_btn = ctk.CTkButton(self, height=50, text='Enter', command=self.enter_event, font=('Arial', 20))
-        self.enter_btn.grid(row=0, column=2, padx=20, pady=10, rowspan=2, sticky='esn')
+        self.enter_btn.grid(row=1, column=2, padx=20, pady=10, rowspan=2, sticky='esn')
         
         # Input value
         self.input_entry = ctk.CTkEntry(self, height=50, corner_radius=8, font=('Arial', 20))
-        self.input_entry.grid(row=1, column=0, padx=20, pady=10 , sticky='ewsn')        
+        self.input_entry.grid(row=2, column=0, padx=20, pady=10 , sticky='ewsn')        
 
         # Result label
         self.result_value = ctk.StringVar(value='result')
         self.result_lbl = ctk.CTkLabel(self,  font=('Arial', 20), fg_color=('white', 'black'), height=50, corner_radius=8, textvariable=self.result_value)
-        self.result_lbl.grid(row=1, column=1, sticky='ew')
+        self.result_lbl.grid(row=2, column=1, sticky='ew')
 
         # Error label
         self.error_value = ctk.StringVar()
         self.error_lbl = ctk.CTkLabel(self, font=('Arial', 20), textvariable=self.error_value)
-        self.error_lbl.grid(row=2, column=0, columnspan=3)
+        self.error_lbl.grid(row=3, column=0, columnspan=3)
         
         # Bank for currency conversion
         self.bank = currency.Bank()
@@ -76,14 +80,15 @@ class MoneyApp(ctk.CTk):
         self.title('Simple test, no need to worry')
         self.geometry('700x500')
 
+        # Label showing current exchange rate
+        self.exchange_rate_lbl = ctk.CTkLabel(self, text='Money app!', font=('Arial', 25))
+        self.exchange_rate_lbl.grid(column=0, row=0, sticky="ew")
+
         # Configure grid
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=3)
 
-        # Label showing current exchange rate
-        self.exchange_rate_lbl = ctk.CTkLabel(self, text='Money app!', font=('Arial', 25))
-        self.exchange_rate_lbl.grid(column=0, row=0, sticky="ew")
 
         # Frame with converter
         self.converter_frame = ConverterFrame(self)
