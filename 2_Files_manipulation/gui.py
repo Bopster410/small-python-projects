@@ -16,7 +16,7 @@ class FilesApp(ctk.CTk):
  
         # Label for cwd
         self.current_dir = ctk.CTkLabel(self, textvariable=self.cwd_str, font=('Arial', 20))
-        self.current_dir.grid(column=0, row=0, pady=10, sticky='ew')
+        self.current_dir.grid(column=0, row=0, pady=10, sticky='w')
         
         # Child directories inside cwd
         self.inner_dirs_btns = self.__form_inner_dirs()
@@ -39,7 +39,7 @@ class FilesApp(ctk.CTk):
     
     def __form_inner_dirs(self):
         # Child directories inside cwd
-        inner_dirs = ['..'] + [child.name for child in self.cwd.iterdir()]
+        inner_dirs = (['..'] if self.cwd.parent != self.cwd else []) + [child.name for child in self.cwd.iterdir()]
         # ..and buttons for all of them
         return [ctk.CTkButton(self, text=child, font=('Arial', 17), command=self.change_dir_event(child)) for child in inner_dirs]
     
