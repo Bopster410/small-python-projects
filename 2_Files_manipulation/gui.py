@@ -27,24 +27,27 @@ class FilesApp(ctk.CTk):
         # else just leave everything as it is
         def change_dir():
             if (self.cwd / new_dir).is_dir():
-                self.cwd = self.cwd / new_dir
+                if new_dir == '..':
+                    self.cwd = self.cwd.parent
+                else:
+                    self.cwd = self.cwd / new_dir
                 self.cwd_str.set(str(self.cwd))
                 self.__grid_forget_all(self.inner_dirs_btns)
                 self.inner_dirs_btns = self.__form_inner_dirs()
-                self.__grid_all(self.inner_dirs_btns)
+                self.__grid_all(self.inner_dirs_btns, first_row=1)
         return change_dir
     
     def __form_inner_dirs(self):
         # Child directories inside cwd
-        inner_dirs = [child.name for child in self.cwd.iterdir()]
+        inner_dirs = ['..'] + [child.name for child in self.cwd.iterdir()]
         # ..and buttons for all of them
-        return [ctk.CTkButton(self, text=str(child), font=('Arial', 17), command=self.change_dir_event(child)) for child in inner_dirs]
+        return [ctk.CTkButton(self, text=child, font=('Arial', 17), command=self.change_dir_event(child)) for child in inner_dirs]
     
     def __grid_forget_all(self, objects):
         for i in range(len(objects)):
             objects[i].grid_forget()
 
     def __grid_all(self, objects, first_row=0):
-        for i in range(first_row, len(objects)):
-            objects[i].grid(column=0, row=i+1, sticky='w', padx=10)
+        for i in range(len(objects)):
+            objects[i].grid(column=0, row=i+first_row, sticky='w', padx=10)
  
