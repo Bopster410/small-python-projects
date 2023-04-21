@@ -26,9 +26,9 @@ class FilesApp(ctk.CTk):
         self.__grid_all(self.inner_dirs_btns, first_row=1)
 
     def change_dir_event(self, new_dir):
-        # If new_dir is a folder, open it,
+        # If new_dir is buttons folder, open it,
         # else just leave everything as it is
-        def change_dir():
+        def change_dir(event):
             if (self.cwd / new_dir).is_dir():
                 if new_dir == '..':
                     self.cwd = self.cwd.parent
@@ -44,8 +44,13 @@ class FilesApp(ctk.CTk):
         # Child directories inside cwd
         inner_dirs = (['..'] if self.cwd.parent != self.cwd else []) + [child.name for child in self.cwd.iterdir()]
         # ..and buttons for all of them
-        return [ctk.CTkButton(self.dirs_frame, text=child, fg_color="white", border_color="#0F0F0F", border_width=2, text_color="black",
-                              font=('Arial', 17), anchor="w", width=400, command=self.change_dir_event(child)) for child in inner_dirs]
+        buttons = list()
+        for child in inner_dirs:
+            btn = ctk.CTkButton(self.dirs_frame, text=child, fg_color="white", border_color="#0F0F0F", border_width=2, text_color="black",
+                              font=('Arial', 17), anchor="w", width=400)
+            btn.bind('<Double-Button-1>', self.change_dir_event(child))
+            buttons.append(btn)
+        return buttons
     
     def __grid_forget_all(self, objects):
         for i in range(len(objects)):
