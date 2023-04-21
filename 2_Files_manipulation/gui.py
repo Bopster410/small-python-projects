@@ -40,6 +40,16 @@ class FilesApp(ctk.CTk):
                 self.__grid_all(self.inner_dirs_btns, first_row=1)
         return change_dir
     
+    def dir_hover_event(self, dir: ctk.CTkButton):
+        def hover_event(event):
+            dir.configure(border_color="#257cee")
+        return hover_event
+    
+    def dir_leave_event(self, dir: ctk.CTkButton):
+        def leave_event(event):
+            dir.configure(border_color="#0F0F0F")
+        return leave_event
+    
     def __form_inner_dirs(self):
         # Child directories inside cwd
         inner_dirs = (['..'] if self.cwd.parent != self.cwd else []) + [child.name for child in self.cwd.iterdir()]
@@ -47,8 +57,10 @@ class FilesApp(ctk.CTk):
         buttons = list()
         for child in inner_dirs:
             btn = ctk.CTkButton(self.dirs_frame, text=child, fg_color="white", border_color="#0F0F0F", border_width=2, text_color="black",
-                              font=('Arial', 17), anchor="w", width=400)
+                              font=('Arial', 17), anchor="w", width=400, hover=False)
             btn.bind('<Double-Button-1>', self.change_dir_event(child))
+            btn.bind('<Motion>', self.dir_hover_event(btn))
+            btn.bind('<Leave>', self.dir_leave_event(btn))
             buttons.append(btn)
         return buttons
     
