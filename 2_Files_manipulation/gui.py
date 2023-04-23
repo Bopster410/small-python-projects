@@ -21,7 +21,8 @@ class FilesApp(ctk.CTk):
         
         # Popup menu
         self.popup = tk.Menu(self, tearoff=False)
-        self.popup.add_command(label='hi', command=self.popup_1_command())
+        self.popup.add_command(label='copy', command=self.popup_copy_command())
+        self.popup.add_command(label='paste', command=self.popup_paste_command())
         self.bind('<Button-3>', self.popup_command())
 
         # Child directories inside cwd
@@ -30,10 +31,15 @@ class FilesApp(ctk.CTk):
         self.inner_dirs_btns = self.__form_inner_dirs()
         self.__grid_all(self.inner_dirs_btns, first_row=1)
 
-    def popup_1_command(self):
-        def popup_1_command():
-            logging.debug('Label "hi" in the popup was clicked')
-        return popup_1_command
+    def popup_copy_command(self):
+        def popup_copy_command():
+            logging.debug('Label "copy" in the popup was clicked')
+        return popup_copy_command
+
+    def popup_paste_command(self):
+        def popup_paste_command():
+            logging.debug('Label "paste" in the popup was clicked')
+        return popup_paste_command
     
     def popup_command(self):
         def popup_command(event):
