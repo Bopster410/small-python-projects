@@ -1,4 +1,4 @@
-import customtkinter as ctk, logging
+import customtkinter as ctk, logging, tkinter as tk
 from pathlib import Path
 
 class FilesApp(ctk.CTk):
@@ -19,11 +19,26 @@ class FilesApp(ctk.CTk):
         self.current_dir = ctk.CTkLabel(self, textvariable=self.cwd_str, font=('Arial', 20))
         self.current_dir.grid(column=0, row=0, pady=10, padx=10, sticky="w")
         
+        # Popup menu
+        self.popup = tk.Menu(self, tearoff=False)
+        self.popup.add_command(label='hi', command=self.popup_1_command())
+        self.bind('<Button-3>', self.popup_command())
+
         # Child directories inside cwd
         self.dirs_frame = ctk.CTkFrame(self, width=400, height=500, border_width=1, border_color="black")
         self.dirs_frame.grid(column=0, row=1, columnspan=2, sticky="we")
         self.inner_dirs_btns = self.__form_inner_dirs()
         self.__grid_all(self.inner_dirs_btns, first_row=1)
+
+    def popup_1_command(self):
+        def popup_1_command():
+            logging.debug('Label "hi" in the popup was clicked')
+        return popup_1_command
+    
+    def popup_command(self):
+        def popup_command(event):
+            self.popup.tk_popup(event.x_root, event.y_root)
+        return popup_command
 
     def change_dir_event(self, new_dir):
         # If new_dir is buttons folder, open it,
