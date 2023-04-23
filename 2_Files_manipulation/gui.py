@@ -1,4 +1,4 @@
-import customtkinter as ctk, logging, tkinter as tk
+import customtkinter as ctk, logging, tkinter as tk, files
 from pathlib import Path
 
 class FilesApp(ctk.CTk):
@@ -24,6 +24,7 @@ class FilesApp(ctk.CTk):
         self.popup.add_command(label='copy', command=self.popup_copy_command())
         self.popup.add_command(label='paste', command=self.popup_paste_command())
         self.selected_dir = None
+        self.src_path = None
 
         # Child directories inside cwd
         self.dirs_frame = ctk.CTkFrame(self, width=400, height=500, border_width=1, border_color="black")
@@ -34,18 +35,24 @@ class FilesApp(ctk.CTk):
     def popup_copy_command(self):
         def popup_copy_command():
             logging.debug('Label "copy" in the popup was clicked')
+            if self.selected_dir != None:
+                self.src_path = self.cwd / self.selected_dir.cget('text')
+                logging.debug(f'New src_path: {self.src_path}')
         return popup_copy_command
 
     def popup_paste_command(self):
         def popup_paste_command():
             logging.debug('Label "paste" in the popup was clicked')
+            if self.src_path != None:
+                fm = files.FileManipulator()
+                fm.copy(self.src_path, self.cwd / self.src_path.name)
         return popup_paste_command
     
     def popup_command(self, dir: ctk.CTkButton):
         def popup_command(event):
             self.popup.tk_popup(event.x_root, event.y_root)
             self.selected_dir = dir
-            logging.debug(f'Current selected dir is {dir.info}')
+            logging.debug(f'Current selected dir is {dir.cget("text")}')
         return popup_command
 
     def change_dir_event(self, new_dir):
