@@ -23,7 +23,7 @@ class FilesApp(ctk.CTk):
         self.popup = tk.Menu(self, tearoff=False)
         self.popup.add_command(label='copy', command=self.popup_copy_command())
         self.popup.add_command(label='paste', command=self.popup_paste_command())
-        self.bind('<Button-3>', self.popup_command())
+        self.selected_dir = None
 
         # Child directories inside cwd
         self.dirs_frame = ctk.CTkFrame(self, width=400, height=500, border_width=1, border_color="black")
@@ -41,9 +41,11 @@ class FilesApp(ctk.CTk):
             logging.debug('Label "paste" in the popup was clicked')
         return popup_paste_command
     
-    def popup_command(self):
+    def popup_command(self, dir: ctk.CTkButton):
         def popup_command(event):
             self.popup.tk_popup(event.x_root, event.y_root)
+            self.selected_dir = dir
+            logging.debug(f'Current selected dir is {dir.info}')
         return popup_command
 
     def change_dir_event(self, new_dir):
@@ -82,6 +84,7 @@ class FilesApp(ctk.CTk):
             btn.bind('<Double-Button-1>', self.change_dir_event(child))
             btn.bind('<Motion>', self.dir_hover_event(btn))
             btn.bind('<Leave>', self.dir_leave_event(btn))
+            btn.bind('<Button-3>', self.popup_command(btn))
             buttons.append(btn)
         return buttons
     
