@@ -20,8 +20,11 @@ class FilesApp(ctk.CTk):
         self.current_dir.grid(column=0, row=0, pady=10, padx=10, sticky="w")
         
         # Popup menu
+        self.popup_command = None
         self.popup_file = tk.Menu(self, tearoff=False)
-        self.popup_file.add_command(label='copy', command=self.__popup_copy_command())
+        self.popup_file.add_command(label='copy', command=self.__popup_copycut_command('copy'))
+        self.popup_file.add_command(label='cut', command=self.__popup_copycut_command('cut'))
+        self.popup_file.add_command(label='paste', command=self.__popup_paste_command())
         
         self.popup_general = tk.Menu(self, tearoff=False)
         self.popup_general.add_command(label='paste', command=self.__popup_paste_command())
@@ -30,7 +33,7 @@ class FilesApp(ctk.CTk):
         self.src_path = None
 
         # Child directories inside cwd
-        self.dirs_frame = ctk.CTkFrame(self, width=400, height=500, border_width=1, border_color="black")
+        self.dirs_frame = ctk.CTkScrollableFrame(self, width=400, height=300, border_width=1, border_color="black")
         self.dirs_frame.grid(column=0, row=1, columnspan=2, sticky="we")
         self.dirs_frame.bind('<Button-3>', self.__popup_general_command())
         self.inner_dirs_btns = self.__form_inner_dirs()
@@ -43,13 +46,15 @@ class FilesApp(ctk.CTk):
         self.__grid_all(self.inner_dirs_btns, first_row=1)
     
     # Callback for item copying
-    def __popup_copy_command(self):
-        def popup_copy_command():
+    def __popup_copycut_command(self, command: str):
+        def popup_copycut_command():
             logging.debug('Label "copy" in the popup was clicked')
             if self.selected_dir != None:
                 self.src_path = self.cwd / self.selected_dir.cget('text')
+                self.popup_command = command
                 logging.debug(f'New src_path: {self.src_path}')
-        return popup_copy_command
+        return popup_copycut_command
+    
 
     # Callback for item pasting
     def __popup_paste_command(self):
@@ -57,7 +62,10 @@ class FilesApp(ctk.CTk):
             logging.debug('Label "paste" in the popup was clicked')
             if self.src_path != None:
                 fm = files.FileManipulator()
-                fm.copy(self.src_path, self.cwd / self.src_path.name)
+                if self.popup_command == 'copy':
+                    fm.copy(self.src_path, self.cwd / self.src_path.name)
+                elif self.popup_command == 'cut':
+                    fm.move(self.src_path, self.cwd / self.src_path.name)
                 self.reload_dirs()
         return popup_paste_command
     
