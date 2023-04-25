@@ -33,7 +33,7 @@ class FilesApp(ctk.CTk):
         self.src_path = None
 
         # Child directories inside cwd
-        self.dirs_frame = ctk.CTkFrame(self, width=400, height=500, border_width=1, border_color="black")
+        self.dirs_frame = ctk.CTkScrollableFrame(self, width=400, height=300, border_width=1, border_color="black")
         self.dirs_frame.grid(column=0, row=1, columnspan=2, sticky="we")
         self.dirs_frame.bind('<Button-3>', self.__popup_general_command())
         self.inner_dirs_btns = self.__form_inner_dirs()
