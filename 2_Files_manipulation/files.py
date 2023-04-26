@@ -6,28 +6,32 @@ class FileManipulator():
         logging.info('FileManipulator object has been created')
     
     # Copies scr to dest (relative)
-    def copy(self, src, dest):
+    def copy(self, src: str, dest: str):
         logging.info(f'copying {src} to {dest}')
 
         # Path to current workin directory in p variable
         p = Path.cwd()
+        dest_path = Path(p / dest)
 
         # Checks if [src] exists
         if Path(p / src).exists():
             try:
+                if dest_path.exists():
+                    dest_path = dest_path.with_stem(dest_path.stem + '(1)')
+
                 if Path(p / src).is_dir():
-                    shutil.copytree(p / src, p /dest)
+                    shutil.copytree(p / src, dest_path)
                 else:
-                    shutil.copy(p / src, p / dest)
+                    shutil.copy(p / src, dest_path)
             # If dest contains folders that doesn't exist
             # then create them
             except FileNotFoundError:
                 dir_to_create = dest[:dest.rfind('/')]
                 os.makedirs(dir_to_create)
                 if Path(p / src).is_dir():
-                    shutil.copytree(p / src, p /dest)
+                    shutil.copytree(p / src, dest_path)
                 else:
-                    shutil.copy(p / src, p / dest)
+                    shutil.copy(p / src, dest_path)
                 logging.info(f"created '{dir_to_create}' folders")
         else:
             logging.error(f"{src} doesn't exist")
@@ -39,17 +43,20 @@ class FileManipulator():
 
         # Path to current workin directory in p variable
         p = Path.cwd()
-
+        dest_path = Path(p / dest)
+        
         # Checks if [src] exists
         if Path(p / src).exists():
             try:
-                shutil.move(p / src, p / dest)
+                if dest_path.exists():
+                    dest_path = dest_path.with_stem(dest_path.stem + '(1)')
+                shutil.move(p / src, dest_path)
             # If dest contains folders that doesn't exist
             # then create them
             except FileNotFoundError:
                 dir_to_create = dest[:dest.rfind('/')]
                 os.makedirs(dir_to_create)
-                shutil.move(p / src, p / dest)
+                shutil.move(p / src, dest_path)
                 logging.info(f"created '{dir_to_create}' folders")
         else:
             logging.error(f"{src} doesn't exits")

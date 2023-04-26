@@ -63,6 +63,7 @@ class FilesApp(ctk.CTk):
             if self.src_path != None:
                 fm = files.FileManipulator()
                 if self.popup_command == 'copy':
+                    logging.debug(f'Copying from {self.src_path} to {self.cwd / self.src_path.name}')
                     fm.copy(self.src_path, self.cwd / self.src_path.name)
                 elif self.popup_command == 'cut':
                     fm.move(self.src_path, self.cwd / self.src_path.name)
