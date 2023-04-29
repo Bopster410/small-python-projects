@@ -10,7 +10,8 @@ class ConverterFrame(ctk.CTkFrame):
         self.grid_columnconfigure(2, weight=2)
 
         # Label showing current exchange rate
-        self.exchange_rate_value = ctk.StringVar(value=f'1 USD == {get_new_exchange_rate()} RUB')
+        exchange_rate = get_new_exchange_rate()
+        self.exchange_rate_value = ctk.StringVar(value=f'1 USD == {exchange_rate} RUB')
         self.exchange_rate_lbl = ctk.CTkLabel(self, font=('Arial', 25), textvariable=self.exchange_rate_value)
         self.exchange_rate_lbl.grid(column=0, row=0, columnspan=2, pady=10, sticky='ew')
 
@@ -46,8 +47,8 @@ class ConverterFrame(ctk.CTkFrame):
         
         # Bank for currency conversion
         self.bank = currency.Bank()
-        self.bank.add_rate('USD', 'RUB', 1 / get_new_exchange_rate())
-        self.bank.add_rate('RUB', 'USD', get_new_exchange_rate())
+        self.bank.add_rate('USD', 'RUB', 1 / exchange_rate)
+        self.bank.add_rate('RUB', 'USD', exchange_rate)
 
 
     # Callback for the enter button (enter_btn)
@@ -121,7 +122,11 @@ def get_new_exchange_rate(cache=True):
     url = 'https://api.apilayer.com/fixer/latest'
     params = {'base': 'USD', 'symbols': 'RUB'}
     result = ws.use_api(url, params, cache)
-    rubles = round(result.json()['rates']['RUB'], 2)
+    if result == None:
+        logging.critical('error with exchange rate update')
+        rubles = 1
+    else:
+        rubles = round(result.json()['rates']['RUB'], 2)
     # rubles = 75.5
     return rubles
 

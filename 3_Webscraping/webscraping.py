@@ -16,7 +16,7 @@ class WebScraper():
     
     def find(self, src, selector):
         result = None
-        with shelve.open('WebScraper_cache') as cache_db:
+        with shelve.open('cache/WebScraper_cache') as cache_db:
             db_tag = 'bob'
             try:
                 html = self.get_html(src)
@@ -29,15 +29,19 @@ class WebScraper():
         return result
 
     def use_api(self, url, params, cache=True):
-        with shelve.open('WebScraper_cache') as cache_db:
+        with shelve.open('cache/WebScraper_cache') as cache_db:
             db_tag = ''.join((url, ''.join(params)))
             if db_tag in cache_db.keys() and cache:
                 respons = cache_db[db_tag]
                 logging.info('api respons from cache was taken')
             else:
-                respons = requests.request('GET', url, headers={'apikey': self.api_key}, params=params)
-                cache_db[db_tag] = respons
-                logging.info('api was used')
+                try:
+                    respons = requests.request('GET', url, headers={'apikey': self.api_key}, params=params)
+                    cache_db[db_tag] = respons
+                    logging.info('api was used')
+                except requests.exceptions.ConnectionError:
+                    logging.critical('connection problems')
+                    respons = None
         return respons
 
 class WebPages():
