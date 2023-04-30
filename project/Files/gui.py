@@ -1,14 +1,14 @@
-import customtkinter as ctk, logging, tkinter as tk, files
+import customtkinter as ctk, logging, tkinter as tk, project.Files.files as files
 from pathlib import Path
 
-class FilesApp(ctk.CTk):
-    def __init__(self):
+class FilesApp(ctk.CTkFrame):
+    def __init__(self, master):
         logging.info('FilesApp object was created')
-        super().__init__()
+        super().__init__(master)
 
         # Init window settings
-        self.title('Files app')
-        self.geometry('700x500')
+        # self.title('Files app')
+        # self.geometry('700x500')
         self.columnconfigure((0, 1), weight=1)
 
         # Current working directory

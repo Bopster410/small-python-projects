@@ -1,4 +1,4 @@
-import customtkinter as ctk, webscraping, logging, currency, re
+import customtkinter as ctk, re, logging, project.Webscraping.webscraping as webscraping, project.Webscraping.currency as currency 
 
 # Currency converter frame
 class ConverterFrame(ctk.CTkFrame):
@@ -83,14 +83,10 @@ class ConverterFrame(ctk.CTkFrame):
         logging.debug('Option menu clicked: ' + currency)
 
 
-class MoneyApp(ctk.CTk):
-    def __init__(self):
-        super().__init__()
-
-        # Window settings
-        self.title('Simple test, no need to worry')
-        self.geometry('700x500')
-
+class MoneyApp(ctk.CTkFrame):
+    def __init__(self, master):
+        super().__init__(master)
+        
         # Label showing current exchange rate
         self.exchange_rate_lbl = ctk.CTkLabel(self, text='Money app!', font=('Arial', 25))
         self.exchange_rate_lbl.grid(column=0, row=0, sticky="ew")
