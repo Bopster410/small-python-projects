@@ -1,6 +1,6 @@
-import openpyxl as xl
+import openpyxl as xl, sys
 
-a = xl.load_workbook('test_data/IU4.xlsx')
+a = xl.load_workbook(sys.argv[1])
 sheet = a['ИУ4-23Б']
 
 for row in sheet.iter_rows(min_row=3, max_row=sheet.max_row - 2):
