@@ -1,11 +1,12 @@
 **/__pycache__
 **/.pytest_cache
-**/venv
+**/venv2
 *.log
 *.bak
 *.dat
 *.dir
 cache/
+test_data/
 WebScraper_cache.*
 .vscode/
 *.code-workspace
