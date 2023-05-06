@@ -1,4 +1,12 @@
-import logging, webbrowser, shelve, bs4, requests
+import logging, webbrowser, shelve, bs4, requests, os.path, io
+
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaIoBaseDownload
+
 
 class WebScraper():
     def __init__(self):
@@ -44,6 +52,12 @@ class WebScraper():
                     respons = None
         return respons
 
+    def save_file(self, file, save_as_name):
+        file_on_hard_drive = open(save_as_name, 'wb')
+        for chunk in file.iter_content(100000):
+            file_on_hard_drive.write(chunk)
+
+
 class WebPages():
     def __init__(self):
         logging.info("WebPages object has been created")
@@ -73,4 +87,4 @@ class WebPages():
 if __name__ == '__main__':
     logging.basicConfig(filename='files.log', filemode='w', level=logging.INFO, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
     ws = WebScraper()
-    print(ws.get_html('https://www.banki.ru/products/currency/rub/'))
+    
