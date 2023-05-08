@@ -1,4 +1,4 @@
-import openpyxl as xl, sys, os.path, io
+import openpyxl as xl, sys, os.path, io, logging
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -10,8 +10,8 @@ from googleapiclient.http import MediaIoBaseDownload
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
               'https://www.googleapis.com/auth/drive']
-def load_from_drive(file_id):
 
+def load_from_drive(file_id):
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -40,24 +40,27 @@ def load_from_drive(file_id):
         done = False
         while done is False:
             status, done = downloader.next_chunk()
-            print(F'Download {int(status.progress() * 100)}.')
+            logging.info(F'Download {int(status.progress() * 100)}.')
 
     except HttpError as error:
         # TODO(developer) - Handle errors from drive API.
-        print(f'An error occurred: {error}')
+        logging.error(f'An error occurred: {error}')
 
     with open('aboba.xlsx', 'wb') as input:
         input.write(file.getvalue())
 
-load_from_drive('1BazyJhkbwynAbXG24_VgbXU7fOJkkQSEf70tpPRSaYY')
 
-a = xl.load_workbook('aboba.xlsx')
-sheet = a['ИУ4-23Б']
+if __name__ == '__main__':
+    logging.basicConfig(filename='excel.log', filemode='w', level=logging.DEBUG, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
+    load_from_drive(sys.argv[1])
 
-for row in sheet.iter_rows(min_row=3, max_row=sheet.max_row - 2):
-    print(f'{row[0].value}: ', end='')
-    for cell in row[1:]:
-        if cell.value == None:
-            print('')
-            break
-        print(cell.value, end=' ')
+    a = xl.load_workbook('aboba.xlsx')
+    sheet = a['ИУ4-23Б']
+
+    for row in sheet.iter_rows(min_row=3, max_row=sheet.max_row - 2):
+        print(f'{row[0].value}: ', end='')
+        for cell in row[1:]:
+            if cell.value == None:
+                print('')
+                break
+            print(cell.value, end=' ')
