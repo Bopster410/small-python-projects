@@ -1,7 +1,7 @@
-import customtkinter as ctk, re, logging, project.Webscraping.webscraping as webscraping, project.Webscraping.currency as currency 
+import customtkinter as tk, re, logging, project.Webscraping.webscraping as webscraping, project.Webscraping.currency as currency 
 
 # Currency converter frame
-class ConverterFrame(ctk.CTkFrame):
+class ConverterFrame(tk.Frame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
@@ -11,38 +11,38 @@ class ConverterFrame(ctk.CTkFrame):
 
         # Label showing current exchange rate
         exchange_rate = get_new_exchange_rate()
-        self.exchange_rate_value = ctk.StringVar(value=f'1 USD == {exchange_rate} RUB')
-        self.exchange_rate_lbl = ctk.CTkLabel(self, font=('Arial', 25), textvariable=self.exchange_rate_value)
+        self.exchange_rate_value = tk.StringVar(value=f'1 USD == {exchange_rate} RUB')
+        self.exchange_rate_lbl = tk.Label(self, font=('Arial', 25), textvariable=self.exchange_rate_value)
         self.exchange_rate_lbl.grid(column=0, row=0, columnspan=2, pady=10, sticky='ew')
 
         # Button to update current exchange rate
-        self.update_rate_btn = ctk.CTkButton(self, height=30, text='Update', command=self.update_rate_event)
+        self.update_rate_btn = tk.Button(self, height=30, text='Update', command=self.update_rate_event)
         self.update_rate_btn.grid(column=2, row=0, padx=20, sticky='e')
 
         # Input currency
-        self.currency_menu_input = ctk.CTkOptionMenu(self, values=['USD', 'RUB'], command=self.currency_menu_event)
+        self.currency_menu_input = tk.OptionMenu(self, values=['USD', 'RUB'], command=self.currency_menu_event)
         self.currency_menu_input.grid(row=1, column=0, padx=20, pady=10, sticky='we')
 
         # Output currency
-        self.currency_menu_output = ctk.CTkOptionMenu(self, values=['RUB', 'USD' ], command=self.currency_menu_event)
+        self.currency_menu_output = tk.OptionMenu(self, values=['RUB', 'USD' ], command=self.currency_menu_event)
         self.currency_menu_output.grid(row=1, column=1, pady=20,  sticky='we')
 
         # Button to show the result
-        self.enter_btn = ctk.CTkButton(self, height=50, text='Enter', command=self.enter_event, font=('Arial', 20))
+        self.enter_btn = tk.Button(self, height=50, text='Enter', command=self.enter_event, font=('Arial', 20))
         self.enter_btn.grid(row=1, column=2, padx=20, pady=10, rowspan=2, sticky='esn')
         
         # Input value
-        self.input_entry = ctk.CTkEntry(self, height=50, corner_radius=8, font=('Arial', 20))
+        self.input_entry = tk.Entry(self, height=50, corner_radius=8, font=('Arial', 20))
         self.input_entry.grid(row=2, column=0, padx=20, pady=10 , sticky='ewsn')        
 
         # Result label
-        self.result_value = ctk.StringVar(value='result')
-        self.result_lbl = ctk.CTkLabel(self,  font=('Arial', 20), fg_color=('white', 'black'), height=50, corner_radius=8, textvariable=self.result_value)
+        self.result_value = tk.StringVar(value='result')
+        self.result_lbl = tk.Label(self,  font=('Arial', 20), fg_color=('white', 'black'), height=50, corner_radius=8, textvariable=self.result_value)
         self.result_lbl.grid(row=2, column=1, sticky='ew')
 
         # Error label
-        self.error_value = ctk.StringVar()
-        self.error_lbl = ctk.CTkLabel(self, font=('Arial', 20), textvariable=self.error_value)
+        self.error_value = tk.StringVar()
+        self.error_lbl = tk.Label(self, font=('Arial', 20), textvariable=self.error_value)
         self.error_lbl.grid(row=3, column=0, columnspan=3)
         
         # Bank for currency conversion
@@ -83,12 +83,12 @@ class ConverterFrame(ctk.CTkFrame):
         logging.debug('Option menu clicked: ' + currency)
 
 
-class MoneyApp(ctk.CTkFrame):
+class MoneyApp(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
         
         # Label showing current exchange rate
-        self.exchange_rate_lbl = ctk.CTkLabel(self, text='Money app!', font=('Arial', 25))
+        self.exchange_rate_lbl = tk.Label(self, text='Money app!', font=('Arial', 25))
         self.exchange_rate_lbl.grid(column=0, row=0, sticky="ew")
 
         # Configure grid

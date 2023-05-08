@@ -1,7 +1,7 @@
-import customtkinter as ctk, logging, tkinter as tk, project.Files.files as files
+import customtkinter as tk, logging, tkinter as tk, project.Files.files as files
 from pathlib import Path
 
-class FilesApp(ctk.CTkFrame):
+class FilesApp(tk.Frame):
     def __init__(self, master):
         logging.info('FilesApp object was created')
         super().__init__(master)
@@ -13,10 +13,10 @@ class FilesApp(ctk.CTkFrame):
 
         # Current working directory
         self.cwd = Path.cwd()
-        self.cwd_str = ctk.StringVar(value=str(self.cwd))
+        self.cwd_str = tk.StringVar(value=str(self.cwd))
  
         # Label for cwd
-        self.current_dir = ctk.CTkLabel(self, textvariable=self.cwd_str, font=('Arial', 20))
+        self.current_dir = tk.Label(self, textvariable=self.cwd_str, font=('Arial', 20))
         self.current_dir.grid(column=0, row=0, pady=10, padx=10, sticky="w")
         
         # Popup menu
@@ -33,7 +33,7 @@ class FilesApp(ctk.CTkFrame):
         self.src_path = None
 
         # Child directories inside cwd
-        self.dirs_frame = ctk.CTkScrollableFrame(self, width=400, height=300, border_width=1, border_color="black")
+        self.dirs_frame = tk.ScrollableFrame(self, width=400, height=300, border_width=1, border_color="black")
         self.dirs_frame.grid(column=0, row=1, columnspan=2, sticky="we")
         self.dirs_frame.bind('<Button-3>', self.__popup_general_command())
         self.inner_dirs_btns = self.__form_inner_dirs()
@@ -71,7 +71,7 @@ class FilesApp(ctk.CTkFrame):
         return popup_paste_command
     
     # Callback for files popup appearance
-    def __popup_file_command(self, dir: ctk.CTkButton):
+    def __popup_file_command(self, dir: tk.Button):
         def popup_file_command(event):
             self.popup_file.tk_popup(event.x_root, event.y_root)
             self.selected_dir = dir
@@ -100,13 +100,13 @@ class FilesApp(ctk.CTkFrame):
         return change_dir_event
     
     # Callback for item hovering
-    def __dir_hover_event(self, dir: ctk.CTkButton):
+    def __dir_hover_event(self, dir: tk.Button):
         def dir_hover_event(event):
             dir.configure(border_color="#257cee")
         return dir_hover_event
     
     # Callback for leaving item after hovering it
-    def __dir_leave_event(self, dir: ctk.CTkButton):
+    def __dir_leave_event(self, dir: tk.Button):
         def dir_leave_event(event):
             dir.configure(border_color="#0F0F0F")
         return dir_leave_event
@@ -118,7 +118,7 @@ class FilesApp(ctk.CTkFrame):
         # ..and buttons for all of them
         buttons = list()
         for child in inner_dirs:
-            btn = ctk.CTkButton(self.dirs_frame, text=child, fg_color="white", border_color="#0F0F0F", border_width=2, text_color="black",
+            btn = tk.Button(self.dirs_frame, text=child, fg_color="white", border_color="#0F0F0F", border_width=2, text_color="black",
                               font=('Arial', 17), anchor="w", width=400, hover=False)
             btn.bind('<Double-Button-1>', self.__change_dir_event(child))
             btn.bind('<Motion>', self.__dir_hover_event(btn))
