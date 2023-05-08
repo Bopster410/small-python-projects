@@ -51,7 +51,7 @@ def load_from_drive(file_id):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='files.log', filemode='w', level=logging.DEBUG, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
+    logging.basicConfig(filename='excel.log', filemode='w', level=logging.DEBUG, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
     load_from_drive(sys.argv[1])
 
     a = xl.load_workbook('aboba.xlsx')
