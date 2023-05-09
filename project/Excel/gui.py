@@ -1,5 +1,4 @@
 import customtkinter as ctk, openpyxl as xl, logging, excel
-from pathlib import Path
 
 class ExcelFileFrame(ctk.CTkFrame):
     def __init__(self, master):
@@ -64,10 +63,10 @@ if __name__ == '__main__':
     a = ctk.CTk()
     a.resizable(False, False)
 
-    a_fr = ctk.CTkFrame(a)
-    a_fr.grid(row=1, column=0, columnspan=2)
+    # a_fr = ctk.CTkFrame(a)
+    # a_fr.grid(row=1, column=0, columnspan=2)
 
-    app = ExcelApp(a_fr)
+    app = ExcelApp(a)
     app.grid(row=0, column=0)
 
     a.mainloop()

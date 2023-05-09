@@ -1,8 +1,8 @@
 from project.Files.gui import FilesApp
 from project.Webscraping.gui import MoneyApp
-import customtkinter as tk
+import customtkinter as ctk
 
-class MainApp(tk.Tk):
+class MainApp(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.geometry('800x600')
@@ -10,13 +10,13 @@ class MainApp(tk.Tk):
         self.grid_columnconfigure(0, weight=3)
         self.grid_columnconfigure(1, weight=1)
         
-        self.money_app_btn = tk.Button(self, text='Converter', command=self.__to_money_app)
+        self.money_app_btn = ctk.CTkButton(self, text='Converter', command=self.__to_money_app)
         self.money_app_btn.grid(row=0, column=1)
 
-        self.files_app_btn = tk.Button(self, text='Files', command=self.__to_files_app)
+        self.files_app_btn = ctk.CTkButton(self, text='Files', command=self.__to_files_app)
         self.files_app_btn.grid(row=1, column=1)
 
-        self.app_frame = tk.Frame(self)
+        self.app_frame = ctk.CTkFrame(self)
         self.app_frame.grid_columnconfigure((0, 1), weight=1)
         self.app_frame.grid(row=0, column=0, rowspan=3, sticky='we')
 
