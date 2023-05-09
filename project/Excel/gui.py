@@ -55,7 +55,8 @@ class ExcelApp(ctk.CTkFrame):
         self.excel_file.delete_workbook()
 
     def load_from_drive_command(self):
-        pass
+        dialog = ctk.CTkInputDialog(text='Input id:', title='file from drive')
+        excel.load_from_drive(dialog.get_input())
 
 
 if __name__ == '__main__':
