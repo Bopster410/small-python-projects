@@ -7,7 +7,6 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
 
-
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
               'https://www.googleapis.com/auth/drive']
 
@@ -50,17 +49,57 @@ def load_from_drive(file_id):
         input.write(file.getvalue())
 
 
+SAMPLE_SPREADSHEET_ID = '1BazyJhkbwynAbXG24_VgbXU7fOJkkQSEf70tpPRSaYY'
+SAMPLE_RANGE_NAME = 'ИУ4-23Б!B10:H10'
+
+def read_from_sheet():
+    creds = None
+    # The file token.json stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first
+    # time.
+    if os.path.exists('test_data/token.json'):
+        creds = Credentials.from_authorized_user_file('test_data/token.json', SCOPES)
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'test_data/epic_client.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+        # Save the credentials for the next run
+        with open('test_data/token.json', 'w') as token:
+            token.write(creds.to_json())
+
+    try:
+        service = build('sheets', 'v4', credentials=creds)
+
+        # Call the Sheets API
+        sheet = service.spreadsheets()
+        result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
+                                    range=SAMPLE_RANGE_NAME).execute()
+        values = result.get('values', [])
+
+        if not values:
+            print('No data found.')
+            return
+
+        print(values[0])
+    except HttpError as err:
+        print(err)
+
 if __name__ == '__main__':
     logging.basicConfig(filename='excel.log', filemode='w', level=logging.DEBUG, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
-    load_from_drive(sys.argv[1])
+    read_from_sheet()
+    # load_from_drive(sys.argv[1])
 
-    a = xl.load_workbook('aboba.xlsx')
-    sheet = a['ИУ4-23Б']
+    # a = xl.load_workbook('aboba.xlsx')
+    # sheet = a['ИУ4-23Б']
 
-    for row in sheet.iter_rows(min_row=3, max_row=sheet.max_row - 2):
-        print(f'{row[0].value}: ', end='')
-        for cell in row[1:]:
-            if cell.value == None:
-                print('')
-                break
-            print(cell.value, end=' ')
+    # for row in sheet.iter_rows(min_row=3, max_row=sheet.max_row - 2):
+    #     print(f'{row[0].value}: ', end='')
+    #     for cell in row[1:]:
+    #         if cell.value == None:
+    #             print('')
+    #             break
+    #         print(cell.value, end=' ')
