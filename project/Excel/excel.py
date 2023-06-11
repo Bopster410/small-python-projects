@@ -49,10 +49,7 @@ def load_from_drive(file_id):
         input.write(file.getvalue())
 
 
-SAMPLE_SPREADSHEET_ID = '1BazyJhkbwynAbXG24_VgbXU7fOJkkQSEf70tpPRSaYY'
-SAMPLE_RANGE_NAME = 'ИУ4-23Б!B10:H10'
-
-def read_from_sheet():
+def read_from_sheet(file_id, range_name):
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -76,8 +73,8 @@ def read_from_sheet():
 
         # Call the Sheets API
         sheet = service.spreadsheets()
-        result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
-                                    range=SAMPLE_RANGE_NAME).execute()
+        result = sheet.values().get(spreadsheetId=file_id,
+                                    range=range_name).execute()
         values = result.get('values', [])
 
         if not values:
@@ -90,7 +87,7 @@ def read_from_sheet():
 
 if __name__ == '__main__':
     logging.basicConfig(filename='excel.log', filemode='w', level=logging.DEBUG, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
-    read_from_sheet()
+    read_from_sheet(sys.argv[1], sys.argv[2])
     # load_from_drive(sys.argv[1])
 
     # a = xl.load_workbook('aboba.xlsx')
