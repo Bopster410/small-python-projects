@@ -9,7 +9,7 @@ class ExcelFileFrame(ctk.CTkFrame):
         for cell in self.table.values():
             cell.grid_forget()
 
-    def reload_workbook(self, file_name):
+    def reload_workbook_local(self, file_name):
         self.delete_workbook()
 
         workbook = xl.load_workbook(file_name)
@@ -23,6 +23,21 @@ class ExcelFileFrame(ctk.CTkFrame):
                 # else:
                 #     current_cell = ctk.Label(self, text='')
                     current_cell.grid(row=cell.row-1, column=cell.column-1)
+    
+    def reload_workbook_drive(self, file_id):
+        self.delete_workbook()
+
+        workbook = excel.read_from_sheet(file_id, 'ИУ4-23Б!A1:P30')
+
+        for row_ind, row in enumerate(workbook):
+            for column_ind, cell in enumerate(row):
+                if (cell != None):
+
+                    current_cell = ctk.CTkLabel(self, text=cell)
+                    self.table[f'{row_ind}:{column_ind}'] = current_cell
+                    # else:
+                    #     current_cell = ctk.Label(self, text='')
+                    current_cell.grid(row=row_ind, column=column_ind)
 
 
 class ExcelApp(ctk.CTkFrame):
@@ -37,18 +52,31 @@ class ExcelApp(ctk.CTkFrame):
 
         self.clear_btn = ctk.CTkButton(self, text='clear', command=self.clear_command)
         self.clear_btn.grid(row=0, column=2)
-        self.clear_btn = ctk.CTkButton(self, text='load from drive', command=self.load_from_drive_command)
-        self.clear_btn.grid(row=0, column=3)
+
+        self.load_from_drive_btn = ctk.CTkButton(self, text='load from drive', command=self.load_from_drive_command)
+        self.load_from_drive_btn.grid(row=0, column=3)
+
+        self.drive_local_option = ctk.CTkOptionMenu(self, values=['drive', 'local'])
+        self.drive_local_option.grid(row=0, column=4)
 
         self.frame = ctk.CTkFrame(self)
-        self.frame.grid(row=1, column=0, columnspan=4)
+        self.frame.grid(row=1, column=0, columnspan=5)
         self.excel_file = ExcelFileFrame(self.frame)
         self.excel_file.grid(row=0, column=0)
     
     def input_confirm_command(self):
-        file_name = self.file_id_input.get()
-        logging.info(f'file name that was entered: {file_name}')
-        self.excel_file.reload_workbook(file_name)
+        choice = self.drive_local_option.get()
+        if choice == 'local':
+            file_name = self.file_id_input.get()
+            logging.info(f'file name that was entered: {file_name}')
+            self.excel_file.reload_workbook_local(file_name)
+        elif choice == 'drive':
+            file_id = self.file_id_input.get()
+            logging.info(f'file id that was entered: {file_id}')
+            self.excel_file.reload_workbook_drive(file_id)
+        else:
+            logging.error('wrong choice')
+
         
     def clear_command(self):
         self.excel_file.delete_workbook()
