@@ -81,13 +81,13 @@ def read_from_sheet(file_id, range_name):
             print('No data found.')
             return
 
-        print(values[0])
+        return values
     except HttpError as err:
         print(err)
 
 if __name__ == '__main__':
     logging.basicConfig(filename='excel.log', filemode='w', level=logging.DEBUG, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
-    read_from_sheet(sys.argv[1], sys.argv[2])
+    print(read_from_sheet(sys.argv[1], sys.argv[2]))
     # load_from_drive(sys.argv[1])
 
     # a = xl.load_workbook('aboba.xlsx')
