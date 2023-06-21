@@ -1,5 +1,6 @@
 import customtkinter as ctk, openpyxl as xl, logging, excel
 
+
 class ExcelFileFrame(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
@@ -18,7 +19,7 @@ class ExcelFileFrame(ctk.CTkFrame):
         for row in sheet.iter_rows(min_row=0, max_row=sheet.max_row):
             for cell in row:
                 if cell.value != None:
-                    current_cell = ctk.CTkLabel(self, text=cell.value)
+                    current_cell = ctk.CTkLabel(self, text=cell.value, width=100)
                     self.table[cell.coordinate] = current_cell
                 # else:
                 #     current_cell = ctk.Label(self, text='')
@@ -33,7 +34,7 @@ class ExcelFileFrame(ctk.CTkFrame):
             for column_ind, cell in enumerate(row):
                 if (cell != None):
 
-                    current_cell = ctk.CTkLabel(self, text=cell)
+                    current_cell = ctk.CTkLabel(self, text=cell, width=100)
                     self.table[f'{row_ind}:{column_ind}'] = current_cell
                     # else:
                     #     current_cell = ctk.Label(self, text='')
