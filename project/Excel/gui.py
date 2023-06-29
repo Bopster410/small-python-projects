@@ -19,7 +19,7 @@ class ExcelFileFrame(ctk.CTkFrame):
         for row in sheet.iter_rows(min_row=0, max_row=sheet.max_row):
             for cell in row:
                 if cell.value != None:
-                    current_cell = ctk.CTkLabel(self, text=cell.value, width=100)
+                    current_cell = ctk.CTkLabel(self, text=cell.value, width=80)
                     self.table[cell.coordinate] = current_cell
                 # else:
                 #     current_cell = ctk.Label(self, text='')
@@ -28,13 +28,13 @@ class ExcelFileFrame(ctk.CTkFrame):
     def reload_workbook_drive(self, file_id):
         self.delete_workbook()
 
-        workbook = excel.read_from_sheet(file_id, 'ИУ4-23Б!A1:P30')
+        workbook = excel.read_from_sheet(file_id, 'ИУ4-23Б!A1:U30')
 
         for row_ind, row in enumerate(workbook):
             for column_ind, cell in enumerate(row):
                 if (cell != None):
 
-                    current_cell = ctk.CTkLabel(self, text=cell, width=100)
+                    current_cell = ctk.CTkLabel(self, text=cell, width=80)
                     self.table[f'{row_ind}:{column_ind}'] = current_cell
                     # else:
                     #     current_cell = ctk.Label(self, text='')
