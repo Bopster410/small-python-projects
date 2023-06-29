@@ -10,7 +10,7 @@ from googleapiclient.http import MediaIoBaseDownload
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
               'https://www.googleapis.com/auth/drive']
 
-def load_from_drive(file_id):
+def google_auth():
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -21,14 +21,25 @@ def load_from_drive(file_id):
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
+            try:
+                creds.refresh(Request())
+            except:
+                flow = InstalledAppFlow.from_client_secrets_file('test_data/epic_client.json', SCOPES)
+                creds = flow.run_local_server(port=0)
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'test_data/epic_client.json', SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file('test_data/epic_client.json', SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
         with open('test_data/token.json', 'w') as token:
             token.write(creds.to_json())
+    return creds
+
+
+def load_from_drive(file_id):
+    creds = google_auth()
+    # The file token.json stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first
+    # time.
 
     try:
         service = build('drive', 'v3', credentials=creds)
@@ -50,23 +61,10 @@ def load_from_drive(file_id):
 
 
 def read_from_sheet(file_id, range_name):
-    creds = None
+    creds = google_auth()
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists('test_data/token.json'):
-        creds = Credentials.from_authorized_user_file('test_data/token.json', SCOPES)
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'test_data/epic_client.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open('test_data/token.json', 'w') as token:
-            token.write(creds.to_json())
 
     try:
         service = build('sheets', 'v4', credentials=creds)
@@ -87,7 +85,8 @@ def read_from_sheet(file_id, range_name):
 
 if __name__ == '__main__':
     logging.basicConfig(filename='excel.log', filemode='w', level=logging.DEBUG, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
-    print(read_from_sheet(sys.argv[1], sys.argv[2]))
+    if (len(sys.argv) == 3):
+        print(read_from_sheet(sys.argv[1], sys.argv[2]))
     # load_from_drive(sys.argv[1])
 
     # a = xl.load_workbook('aboba.xlsx')
