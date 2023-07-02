@@ -14,6 +14,10 @@ class ExcelFileFrame(ctk.CTkFrame):
         self.delete_workbook()
 
         workbook = xl.load_workbook(file_name)
+
+        if workbook == None:
+            return
+
         sheet = workbook['ИУ4-23Б']
 
         for row in sheet.iter_rows(min_row=0, max_row=sheet.max_row):
@@ -29,7 +33,10 @@ class ExcelFileFrame(ctk.CTkFrame):
         self.delete_workbook()
 
         workbook = excel.read_from_sheet(file_id, 'ИУ4-23Б!A1:U30')
-
+        
+        if workbook == None:
+            return
+        
         for row_ind, row in enumerate(workbook):
             for column_ind, cell in enumerate(row):
                 if (cell != None):
