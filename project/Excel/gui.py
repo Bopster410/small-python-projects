@@ -33,7 +33,7 @@ class ExcelFileFrame(ctk.CTkFrame):
         self.delete_workbook()
 
         workbook = excel.read_from_sheet(file_id, 'ИУ4-23Б!A1:U30')
-        
+
         if workbook == None:
             return
         
@@ -96,7 +96,9 @@ class ExcelApp(ctk.CTkFrame):
 
     def load_from_drive_command(self):
         dialog = ctk.CTkInputDialog(text='Input id:', title='file from drive')
-        excel.load_from_drive(dialog.get_input())
+        input = dialog.get_input()
+        if input:
+            excel.load_from_drive(input)
 
 
 if __name__ == '__main__':
