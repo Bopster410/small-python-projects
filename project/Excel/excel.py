@@ -76,12 +76,14 @@ def read_from_sheet(file_id, range_name):
         values = result.get('values', [])
 
         if not values:
-            print('No data found.')
+            logging.info('No data found.')
             return
 
         return values
+    
     except HttpError as err:
-        print(err)
+        logging.error(err)
+
 
 if __name__ == '__main__':
     logging.basicConfig(filename='excel.log', filemode='w', level=logging.DEBUG, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')

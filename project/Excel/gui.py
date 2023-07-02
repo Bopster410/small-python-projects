@@ -14,6 +14,10 @@ class ExcelFileFrame(ctk.CTkFrame):
         self.delete_workbook()
 
         workbook = xl.load_workbook(file_name)
+
+        if workbook == None:
+            return
+
         sheet = workbook['ИУ4-23Б']
 
         for row in sheet.iter_rows(min_row=0, max_row=sheet.max_row):
@@ -30,6 +34,9 @@ class ExcelFileFrame(ctk.CTkFrame):
 
         workbook = excel.read_from_sheet(file_id, 'ИУ4-23Б!A1:U30')
 
+        if workbook == None:
+            return
+        
         for row_ind, row in enumerate(workbook):
             for column_ind, cell in enumerate(row):
                 if (cell != None):
@@ -45,20 +52,25 @@ class ExcelApp(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
 
-        self.file_id_input = ctk.CTkEntry(self, placeholder_text='File name')
+        self.columnconfigure(0, weight=5)
+        self.columnconfigure((1, 2), weight=1)
+        self.columnconfigure(3, weight=12)
+        self.columnconfigure(4, weight=2)
+
+        self.file_id_input = ctk.CTkEntry(self, width=120, placeholder_text='File name')
         self.file_id_input.grid(row=0, column=0, sticky='we')
 
-        self.input_confirm_btn = ctk.CTkButton(self, text='Enter', command=self.input_confirm_command)
-        self.input_confirm_btn.grid(row=0, column=1)
-
-        self.clear_btn = ctk.CTkButton(self, text='clear', command=self.clear_command)
-        self.clear_btn.grid(row=0, column=2)
+        self.drive_local_option = ctk.CTkOptionMenu(self, width=80, values=['drive', 'local'])
+        self.drive_local_option.grid(row=0, column=1, padx=2, sticky='w')
+        
+        self.input_confirm_btn = ctk.CTkButton(self, width=50, text='Enter', command=self.input_confirm_command)
+        self.input_confirm_btn.grid(row=0, column=2, sticky='w')
 
         self.load_from_drive_btn = ctk.CTkButton(self, text='load from drive', command=self.load_from_drive_command)
-        self.load_from_drive_btn.grid(row=0, column=3)
+        self.load_from_drive_btn.grid(row=0, column=3, sticky='e')
 
-        self.drive_local_option = ctk.CTkOptionMenu(self, values=['drive', 'local'])
-        self.drive_local_option.grid(row=0, column=4)
+        self.clear_btn = ctk.CTkButton(self, text='clear', command=self.clear_command)
+        self.clear_btn.grid(row=0, column=4, sticky='e')
 
         self.frame = ctk.CTkFrame(self)
         self.frame.grid(row=1, column=0, columnspan=5)
@@ -84,7 +96,9 @@ class ExcelApp(ctk.CTkFrame):
 
     def load_from_drive_command(self):
         dialog = ctk.CTkInputDialog(text='Input id:', title='file from drive')
-        excel.load_from_drive(dialog.get_input())
+        input = dialog.get_input()
+        if input:
+            excel.load_from_drive(input)
 
 
 if __name__ == '__main__':
