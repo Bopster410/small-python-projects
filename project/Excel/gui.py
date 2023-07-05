@@ -1,9 +1,30 @@
 import customtkinter as ctk, openpyxl as xl, logging, excel, tkinter as tk
 
 
-class ExcelFileFrame(ctk.CTkFrame):
+class ExcelFileFrame(tk.Frame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
+        self.canvas = tk.Canvas(self, width=1000, height=800) 
+        # self.canvas.grid(row=0, column=0, sticky="nsew")
+        
+
+        self.scroll_x = tk.Scrollbar(self, orient=tk.HORIZONTAL, command=self.canvas.xview)
+        # self.scroll_x.grid(row=1, column=0, sticky="ew")
+        self.scroll_x.pack(side=tk.BOTTOM, fill=tk.X)
+
+        self.scroll_y = tk.Scrollbar(self, orient=tk.VERTICAL, command=self.canvas.yview)
+        # self.scroll_y.grid(row=0, column=1, sticky="ns")
+        self.scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.canvas.configure(yscrollcommand=self.scroll_y.set, xscrollcommand=self.scroll_x.set)
+        self.canvas.bind('<Configure>', lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+        
+        self.frame = tk.Frame(self.canvas)
+
+        self.canvas.create_window(0, 0, anchor="nw", window=self.frame)
+        # self.canvas.configure(scrollregion=self.canvas.bbox("all"))
         self.table = {}
 
     def delete_workbook(self):
@@ -23,11 +44,13 @@ class ExcelFileFrame(ctk.CTkFrame):
         for row in sheet.iter_rows(min_row=0, max_row=sheet.max_row):
             for cell in row:
                 if cell.value != None:
-                    current_cell = ctk.CTkLabel(self, text=cell.value, width=80)
+                    current_cell = ctk.CTkLabel(text=cell.value, width=80)
                     self.table[cell.coordinate] = current_cell
                 # else:
                 #     current_cell = ctk.Label(self, text='')
-                    current_cell.grid(row=cell.row-1, column=cell.column-1)
+                    self.canvas.create_window((cell.column - 1) * 100, (cell.row - 1) * 15, window=current_cell, width=100, height=15)
+        
+
     
     def reload_workbook_drive(self, file_id):
         self.delete_workbook()
@@ -41,11 +64,13 @@ class ExcelFileFrame(ctk.CTkFrame):
             for column_ind, cell in enumerate(row):
                 if (cell != None):
 
-                    current_cell = ctk.CTkLabel(self, text=cell, width=80)
+                    current_cell = ctk.CTkLabel(self.frame, text=cell, width=80)
                     self.table[f'{row_ind}:{column_ind}'] = current_cell
                     # else:
                     #     current_cell = ctk.Label(self, text='')
                     current_cell.grid(row=row_ind, column=column_ind)
+                    # self.canvas.create_window((column_ind - 1) * 100, (row_ind - 1) * 15, window=current_cell, width=100, height=15)
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
 
 class ExcelApp(ctk.CTkFrame):
@@ -75,7 +100,7 @@ class ExcelApp(ctk.CTkFrame):
         self.clear_btn.grid(row=0, column=4, pady=5, sticky='e')
 
         self.excel_file = ExcelFileFrame(self)
-        self.excel_file.grid(row=1, column=0, columnspan=5, sticky="nsew")
+        self.excel_file.grid(row=1, column=0, columnspan=5)
     
     def input_confirm_command(self):
         choice = self.drive_local_option.get()
@@ -107,7 +132,7 @@ if __name__ == '__main__':
     a.geometry("1024x800")
     a.rowconfigure(0, weight=1)
     a.columnconfigure(0, weight=1)
-    a.resizable(False, False)
+    # a.resizable(False, False)
 
     # a_fr = ctk.CTkFrame(a)
     # a_fr.grid(row=1, column=0, columnspan=2)
