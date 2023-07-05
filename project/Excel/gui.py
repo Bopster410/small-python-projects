@@ -48,7 +48,7 @@ class ExcelFileFrame(tk.Frame):
                     self.table[cell.coordinate] = current_cell
                 # else:
                 #     current_cell = ctk.Label(self, text='')
-                    self.canvas.create_window((cell.column - 1) * 100, (cell.row - 1) * 15, window=current_cell, width=100, height=15)
+                    current_cell.grid(row=cell.column, column=cell.row)
         
 
     
