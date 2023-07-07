@@ -35,7 +35,7 @@ def google_auth():
     return creds
 
 
-def load_from_drive(file_id):
+def load_from_drive(file_id, saveas_name):
     creds = google_auth()
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -56,7 +56,7 @@ def load_from_drive(file_id):
         # TODO(developer) - Handle errors from drive API.
         logging.error(f'An error occurred: {error}')
 
-    with open('aboba.xlsx', 'wb') as input:
+    with open(saveas_name, 'wb') as input:
         input.write(file.getvalue())
 
 

@@ -1,4 +1,5 @@
 import customtkinter as ctk, openpyxl as xl, logging, excel, tkinter as tk
+from tkinter import filedialog
 
 class ExcelFileFrame(tk.Frame):
     def __init__(self, master, **kwargs):
@@ -114,7 +115,6 @@ class ExcelApp(ctk.CTkFrame):
             self.excel_file.reload_workbook_drive(file_id, 'ИУ4-23Б')
         else:
             logging.error('wrong choice')
-
         
     def clear_command(self):
         self.excel_file.delete_workbook()
@@ -123,7 +123,8 @@ class ExcelApp(ctk.CTkFrame):
         dialog = ctk.CTkInputDialog(text='Input id:', title='file from drive')
         input = dialog.get_input()
         if input:
-            excel.load_from_drive(input)
+            filename = filedialog.asksaveasfilename()
+            excel.load_from_drive(input, filename)
 
 
 if __name__ == '__main__':
