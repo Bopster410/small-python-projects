@@ -1,4 +1,4 @@
-import openpyxl as xl, sys, os.path, io, logging
+import sys, os.path, io, logging
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -60,7 +60,7 @@ def load_from_drive(file_id, saveas_name):
         input.write(file.getvalue())
 
 
-def read_from_sheet(file_id, range_name):
+def read_from_sheet(file_id):
     creds = google_auth()
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -71,15 +71,19 @@ def read_from_sheet(file_id, range_name):
 
         # Call the Sheets API
         sheet = service.spreadsheets()
-        result = sheet.values().get(spreadsheetId=file_id,
-                                    range=range_name).execute()
-        values = result.get('values', [])
+        result = sheet.get(spreadsheetId=file_id).execute()
+        # values = result.get('values', [])
+        tabs = {}
+        if 'sheets' in result:
+            for tab in result['sheets']:
+                title = tab['properties']['title']
+                tabs[title] = sheet.values().get(spreadsheetId=file_id, range=title).execute().get('values', [])
 
-        if not values:
+        if not tabs:
             logging.info('No data found.')
             return
 
-        return values
+        return tabs
     
     except HttpError as err:
         logging.error(err)
@@ -87,8 +91,8 @@ def read_from_sheet(file_id, range_name):
 
 if __name__ == '__main__':
     logging.basicConfig(filename='excel.log', filemode='w', level=logging.DEBUG, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
-    if (len(sys.argv) == 3):
-        print(read_from_sheet(sys.argv[1], sys.argv[2]))
+    if (len(sys.argv) == 2):
+        print(read_from_sheet(sys.argv[1]))
     # load_from_drive(sys.argv[1])
 
     # a = xl.load_workbook('aboba.xlsx')

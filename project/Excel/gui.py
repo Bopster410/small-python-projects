@@ -2,40 +2,50 @@ import customtkinter as ctk, openpyxl as xl, logging, excel, tkinter as tk
 from tkinter import filedialog
 
 # Frame with excel table
-class ExcelFileFrame(tk.Frame):
+class ExcelFileFrame(ctk.CTkTabview):
     def __init__(self, master, **kwargs):
         logging.info('Creating ExcelFileFrame instance')
 
         super().__init__(master, **kwargs)
 
+        self.tabs = {}
+        
+
+    def _add_new_tab(self, tab_name):
+        self.add(tab_name)
         # Canvas inside of the frame
-        self.canvas = tk.Canvas(self) 
+        canvas = tk.Canvas(self.tab(tab_name)) 
 
         # Horizontal scrollbar
-        self.scroll_x = tk.Scrollbar(self, orient=tk.HORIZONTAL, command=self.canvas.xview)
-        self.scroll_x.pack(side=tk.BOTTOM, fill=tk.X)
+        scroll_x = tk.Scrollbar(self.tab(tab_name), orient=tk.HORIZONTAL, command=canvas.xview)
+        scroll_x.pack(side=tk.BOTTOM, fill=tk.X)
 
         # Vertical scrollbar
-        self.scroll_y = tk.Scrollbar(self, orient=tk.VERTICAL, command=self.canvas.yview)
-        self.scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
+        scroll_y = tk.Scrollbar(self.tab(tab_name), orient=tk.VERTICAL, command=canvas.yview)
+        scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
 
-        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
 
         # Configuring canvas
-        self.canvas.configure(yscrollcommand=self.scroll_y.set, xscrollcommand=self.scroll_x.set)
+        canvas.configure(yscrollcommand=scroll_y.set, xscrollcommand=scroll_x.set)
         
         # Frame inside of the canvas
-        self.frame = tk.Frame(self.canvas)
-        self.canvas.create_window(0, 0, anchor="nw", window=self.frame)
+        frame = tk.Frame(canvas)
+        canvas.create_window(0, 0, anchor="nw", window=frame)
         
-        self.frame.bind('<Configure>', lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+        frame.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
-        self.table = {}
+        self.tabs[tab_name] = {}
+
+        return frame
 
     # Deletes current workbook
     def delete_workbook(self):
-        for cell in self.table.values():
-            cell.grid_forget()
+        for tab in self.tabs.keys():
+            self.delete(tab)
+            # TODO remove a single sheet
+        #     for cell in tab:
+        #         cell.grid_forget()
 
     # Loads table from the local file
     def reload_workbook_local(self, file_name, sheet):
@@ -46,16 +56,19 @@ class ExcelFileFrame(tk.Frame):
         if workbook == None:
             logging.warning('Something went wrong while loading the workbook')
             return
-
-        if sheet in workbook:
-            logging.info(f"Loading workbook's {sheet} sheet")
+        
+        logging.info(f"Loading workbook {file_name}")
+        for sheet in workbook.sheetnames:
             current_sheet = workbook[sheet]
+
+            frame = self._add_new_tab(sheet)
 
             for row in current_sheet.iter_rows(min_row=0, max_row=current_sheet.max_row):
                 for cell in row:
                     if cell.value != None:
-                        current_cell = ctk.CTkLabel(self.frame, text=cell.value, width=80)
-                        self.table[cell.coordinate] = current_cell
+                        current_cell = ctk.CTkLabel(frame, text=cell.value, width=80)
+                        # TODO contain cells like this
+                        # self.tabs[sheet][cell.coordinate] = current_cell
 
                         current_cell.grid(row=cell.column, column=cell.row)
 
@@ -63,21 +76,22 @@ class ExcelFileFrame(tk.Frame):
     def reload_workbook_drive(self, file_id, sheet):
         self.delete_workbook()
 
-        workbook = excel.read_from_sheet(file_id, f'{sheet}!A1:U30')
+        workbook = excel.read_from_sheet(file_id)
 
-        if workbook == None:
+        if not workbook:
             logging.warning('Something went wrong while loading the workbook')
             return
         
-        logging.info(f"Loading workbook's {sheet} sheet")
-        for row_ind, row in enumerate(workbook):
-            for column_ind, cell in enumerate(row):
-                if (cell != None):
-
-                    current_cell = ctk.CTkLabel(self.frame, text=cell, width=80)
-                    self.table[f'{row_ind}:{column_ind}'] = current_cell
-                    
-                    current_cell.grid(row=row_ind, column=column_ind)
+        logging.info(f"Loading workbook {file_id}")
+        for sheet_name, sheet in workbook.items():
+            current_sheet = self._add_new_tab(sheet_name)
+            for row_ind, row in enumerate(sheet):
+                for column_ind, cell in enumerate(row):
+                    if (cell != None):
+                        current_cell = ctk.CTkLabel(current_sheet, text=cell, width=80)
+                        # self.table[f'{row_ind}:{column_ind}'] = current_cell
+                        
+                        current_cell.grid(row=row_ind, column=column_ind)
                   
     def load_test_data(self):
         self.reload_workbook_local('aboba.xlsx', 'Лист1')
