@@ -43,6 +43,7 @@ class ExcelFileFrame(ctk.CTkTabview):
     def delete_workbook(self):
         for tab in self.tabs.keys():
             self.delete(tab)
+            # TODO remove a single sheet
         #     for cell in tab:
         #         cell.grid_forget()
 
@@ -56,8 +57,8 @@ class ExcelFileFrame(ctk.CTkTabview):
             logging.warning('Something went wrong while loading the workbook')
             return
         
+        logging.info(f"Loading workbook {file_name}")
         for sheet in workbook.sheetnames:
-            logging.info(f"Loading workbook's {sheet} sheet")
             current_sheet = workbook[sheet]
 
             frame = self._add_new_tab(sheet)
@@ -66,6 +67,7 @@ class ExcelFileFrame(ctk.CTkTabview):
                 for cell in row:
                     if cell.value != None:
                         current_cell = ctk.CTkLabel(frame, text=cell.value, width=80)
+                        # TODO contain cells like this
                         # self.tabs[sheet][cell.coordinate] = current_cell
 
                         current_cell.grid(row=cell.column, column=cell.row)
@@ -74,21 +76,22 @@ class ExcelFileFrame(ctk.CTkTabview):
     def reload_workbook_drive(self, file_id, sheet):
         self.delete_workbook()
 
-        workbook = excel.read_from_sheet(file_id, f'{sheet}!A1:U30')
+        workbook = excel.read_from_sheet(file_id)
 
-        if workbook == None:
+        if not workbook:
             logging.warning('Something went wrong while loading the workbook')
             return
         
-        logging.info(f"Loading workbook's {sheet} sheet")
-        for row_ind, row in enumerate(workbook):
-            for column_ind, cell in enumerate(row):
-                if (cell != None):
-
-                    current_cell = ctk.CTkLabel(self.frame, text=cell, width=80)
-                    self.table[f'{row_ind}:{column_ind}'] = current_cell
-                    
-                    current_cell.grid(row=row_ind, column=column_ind)
+        logging.info(f"Loading workbook {file_id}")
+        for sheet_name, sheet in workbook.items():
+            current_sheet = self._add_new_tab(sheet_name)
+            for row_ind, row in enumerate(sheet):
+                for column_ind, cell in enumerate(row):
+                    if (cell != None):
+                        current_cell = ctk.CTkLabel(current_sheet, text=cell, width=80)
+                        # self.table[f'{row_ind}:{column_ind}'] = current_cell
+                        
+                        current_cell.grid(row=row_ind, column=column_ind)
                   
     def load_test_data(self):
         self.reload_workbook_local('aboba.xlsx', 'Лист1')
