@@ -35,6 +35,9 @@ class ExcelFileFrame(ctk.CTkTabview):
         
         frame.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
+        canvas.bind_all('<MouseWheel>', lambda e: canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
+        canvas.bind_all('<Shift-MouseWheel>', lambda e: canvas.xview_scroll(int(-1*(e.delta/120)), "units"))
+
         self.tabs.append(tab_name)
 
         return frame
