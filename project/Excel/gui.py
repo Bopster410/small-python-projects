@@ -8,7 +8,7 @@ class ExcelFileFrame(ctk.CTkTabview):
 
         super().__init__(master, **kwargs)
 
-        self.tabs = {}
+        self.tabs = []
         
 
     def _add_new_tab(self, tab_name):
@@ -35,18 +35,16 @@ class ExcelFileFrame(ctk.CTkTabview):
         
         frame.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
-        self.tabs[tab_name] = {}
+        self.tabs.append(tab_name)
 
         return frame
 
     # Deletes current workbook
     def delete_workbook(self):
-        for tab in self.tabs.keys():
+        for tab in self.tabs:
             self.delete(tab)
         self.tabs.clear()
-            # TODO remove a single sheet
-        #     for cell in tab:
-        #         cell.grid_forget()
+        # TODO remove a single sheet
 
     # Loads table from the local file
     def reload_workbook_local(self, file_name, sheet):
@@ -93,9 +91,6 @@ class ExcelFileFrame(ctk.CTkTabview):
                         # self.table[f'{row_ind}:{column_ind}'] = current_cell
                         
                         current_cell.grid(row=row_ind, column=column_ind)
-                  
-    def load_test_data(self):
-        self.reload_workbook_local('aboba.xlsx', 'Лист1')
 
 
 # Main excel gui
