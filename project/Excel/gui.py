@@ -8,20 +8,20 @@ class ExcelFileFrame(ctk.CTkTabview):
 
         super().__init__(master, **kwargs)
 
-        self.tabs = {}
+        self.tabs = []
         
 
     def _add_new_tab(self, tab_name):
         self.add(tab_name)
         # Canvas inside of the frame
-        canvas = tk.Canvas(self.tab(tab_name)) 
+        canvas = ctk.CTkCanvas(self.tab(tab_name)) 
 
         # Horizontal scrollbar
-        scroll_x = tk.Scrollbar(self.tab(tab_name), orient=tk.HORIZONTAL, command=canvas.xview)
+        scroll_x = ctk.CTkScrollbar(self.tab(tab_name), orientation='horizontal', command=canvas.xview)
         scroll_x.pack(side=tk.BOTTOM, fill=tk.X)
 
         # Vertical scrollbar
-        scroll_y = tk.Scrollbar(self.tab(tab_name), orient=tk.VERTICAL, command=canvas.yview)
+        scroll_y = ctk.CTkScrollbar(self.tab(tab_name), orientation='vertical', command=canvas.yview)
         scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
 
         canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
@@ -30,22 +30,24 @@ class ExcelFileFrame(ctk.CTkTabview):
         canvas.configure(yscrollcommand=scroll_y.set, xscrollcommand=scroll_x.set)
         
         # Frame inside of the canvas
-        frame = tk.Frame(canvas)
+        frame = ctk.CTkFrame(canvas)
         canvas.create_window(0, 0, anchor="nw", window=frame)
         
         frame.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
-        self.tabs[tab_name] = {}
+        canvas.bind_all('<MouseWheel>', lambda e: canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
+        canvas.bind_all('<Shift-MouseWheel>', lambda e: canvas.xview_scroll(int(-1*(e.delta/120)), "units"))
+
+        self.tabs.append(tab_name)
 
         return frame
 
     # Deletes current workbook
     def delete_workbook(self):
-        for tab in self.tabs.keys():
+        for tab in self.tabs:
             self.delete(tab)
-            # TODO remove a single sheet
-        #     for cell in tab:
-        #         cell.grid_forget()
+        self.tabs.clear()
+        # TODO remove a single sheet
 
     # Loads table from the local file
     def reload_workbook_local(self, file_name, sheet):
@@ -92,9 +94,6 @@ class ExcelFileFrame(ctk.CTkTabview):
                         # self.table[f'{row_ind}:{column_ind}'] = current_cell
                         
                         current_cell.grid(row=row_ind, column=column_ind)
-                  
-    def load_test_data(self):
-        self.reload_workbook_local('aboba.xlsx', 'Лист1')
 
 
 # Main excel gui
