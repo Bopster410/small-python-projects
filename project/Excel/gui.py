@@ -9,7 +9,18 @@ class ExcelFileFrame(ctk.CTkTabview):
         super().__init__(master, **kwargs)
 
         self.tabs = []
+        self.canvases = {}
         
+    def _scroll_y(self, e):
+        canvas = self.canvases[self.get()]
+        if canvas:
+            canvas.yview_scroll(int(-1*(e.delta/120)), 'units')
+
+    def _scroll_x(self, e):
+        canvas = self.canvases[self.get()]
+        if canvas:
+            canvas.xview_scroll(int(-1*(e.delta/120)), 'units')
+
 
     def _add_new_tab(self, tab_name):
         self.add(tab_name)
@@ -32,12 +43,13 @@ class ExcelFileFrame(ctk.CTkTabview):
         # Frame inside of the canvas
         frame = ctk.CTkFrame(canvas)
         canvas.create_window(0, 0, anchor="nw", window=frame)
-        
         frame.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
-        canvas.bind_all('<MouseWheel>', lambda e: canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
-        canvas.bind_all('<Shift-MouseWheel>', lambda e: canvas.xview_scroll(int(-1*(e.delta/120)), "units"))
+        # Binding scrollig to mousewheel
+        canvas.bind_all('<MouseWheel>', self._scroll_y)
+        canvas.bind_all('<Shift-MouseWheel>', self._scroll_x)
 
+        self.canvases[tab_name] = canvas
         self.tabs.append(tab_name)
 
         return frame
@@ -47,6 +59,7 @@ class ExcelFileFrame(ctk.CTkTabview):
         for tab in self.tabs:
             self.delete(tab)
         self.tabs.clear()
+        self.canvases.clear()
         # TODO remove a single sheet
 
     # Loads table from the local file
