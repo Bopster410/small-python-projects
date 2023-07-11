@@ -1,4 +1,4 @@
-import customtkinter as ctk, openpyxl as xl, logging, excel, tkinter as tk
+import customtkinter as ctk, openpyxl as xl, logging, project.Excel.excel as excel, tkinter as tk
 from tkinter import filedialog
 
 # Frame with excel table
@@ -10,6 +10,7 @@ class ExcelFileFrame(ctk.CTkTabview):
 
         self.tabs = []
         self.canvases = {}
+
         
     def _scroll_y(self, e):
         canvas = self.canvases[self.get()]
@@ -21,6 +22,19 @@ class ExcelFileFrame(ctk.CTkTabview):
         if canvas:
             canvas.xview_scroll(int(-1*(e.delta/120)), 'units')
 
+    def _next_tab(self, e):
+        current_tab_ind = self.tabs.index(self.get())
+        if current_tab_ind >= len(self.tabs) - 1:
+            self.set(self.tabs[0])
+        else:
+            self.set(self.tabs[current_tab_ind + 1])
+    
+    def _prev_tab(self, e):
+        current_tab_ind = self.tabs.index(self.get())
+        if current_tab_ind <= 0:
+            self.set(self.tabs[len(self.tabs) - 1])
+        else:
+            self.set(self.tabs[current_tab_ind - 1])
 
     def _add_new_tab(self, tab_name):
         self.add(tab_name)
@@ -44,6 +58,8 @@ class ExcelFileFrame(ctk.CTkTabview):
         frame = ctk.CTkFrame(canvas)
         canvas.create_window(0, 0, anchor="nw", window=frame)
         frame.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        frame.bind('<Control-KeyPress-Tab>', self._next_tab)
+        frame.bind('<Shift-Control-KeyPress-Tab>', self._prev_tab)
 
         # Binding scrollig to mousewheel
         canvas.bind_all('<MouseWheel>', self._scroll_y)
