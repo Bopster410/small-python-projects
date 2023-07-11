@@ -1,5 +1,6 @@
 from project.Files.gui import FilesApp
 from project.Webscraping.gui import MoneyApp
+from project.Excel.gui import ExcelApp
 import customtkinter as ctk
 
 class MainApp(ctk.CTk):
@@ -16,6 +17,9 @@ class MainApp(ctk.CTk):
         self.files_app_btn = ctk.CTkButton(self, text='Files', command=self.__to_files_app)
         self.files_app_btn.grid(row=1, column=1)
 
+        self.excel_app_btn = ctk.CTkButton(self, text='Excel', command=self.__to_excel_app)
+        self.excel_app_btn.grid(row=2, column=1)
+
         self.app_frame = ctk.CTkFrame(self)
         self.app_frame.grid_columnconfigure((0, 1), weight=1)
         self.app_frame.grid(row=0, column=0, rowspan=3, sticky='we')
@@ -26,8 +30,9 @@ class MainApp(ctk.CTk):
         if self.app != None:
             self.app.grid_forget()
         
-        self.money_app_btn.configure(state='disabled')
         self.files_app_btn.configure(state='normal')
+        self.money_app_btn.configure(state='disabled')
+        self.excel_app_btn.configure(state='normal')
         self.app = MoneyApp(self.app_frame)
         self.app.grid(row=0, column=0, sticky='we')
     
@@ -37,5 +42,16 @@ class MainApp(ctk.CTk):
         
         self.files_app_btn.configure(state='disabled')
         self.money_app_btn.configure(state='normal')
+        self.excel_app_btn.configure(state='normal')
         self.app = FilesApp(self.app_frame)
+        self.app.grid(row=0, column=0, sticky='we')
+
+    def __to_excel_app(self):
+        if self.app != None:
+            self.app.grid_forget()
+        
+        self.files_app_btn.configure(state='normal')
+        self.money_app_btn.configure(state='normal')
+        self.excel_app_btn.configure(state='disabled')
+        self.app = ExcelApp(self.app_frame)
         self.app.grid(row=0, column=0, sticky='we')

@@ -1,4 +1,4 @@
-import customtkinter as ctk, openpyxl as xl, logging, excel, tkinter as tk
+import customtkinter as ctk, openpyxl as xl, logging, project.Excel.excel as excel, tkinter as tk
 from tkinter import filedialog
 
 # Frame with excel table
