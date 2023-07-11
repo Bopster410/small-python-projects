@@ -30,7 +30,11 @@ class ExcelFileFrame(ctk.CTkTabview):
             self.set(self.tabs[current_tab_ind + 1])
     
     def _prev_tab(self, e):
-        logging.debug(f'hello from tab {self.get()}')
+        current_tab_ind = self.tabs.index(self.get())
+        if current_tab_ind <= 0:
+            self.set(self.tabs[len(self.tabs) - 1])
+        else:
+            self.set(self.tabs[current_tab_ind - 1])
 
     def _add_new_tab(self, tab_name):
         self.add(tab_name)
