@@ -23,7 +23,11 @@ class ExcelFileFrame(ctk.CTkTabview):
             canvas.xview_scroll(int(-1*(e.delta/120)), 'units')
 
     def _next_tab(self, e):
-        print(f'hi from {self.get()} tab')
+        current_tab_ind = self.tabs.index(self.get())
+        if current_tab_ind >= len(self.tabs) - 1:
+            self.set(self.tabs[0])
+        else:
+            self.set(self.tabs[current_tab_ind + 1])
 
     def _add_new_tab(self, tab_name):
         self.add(tab_name)
