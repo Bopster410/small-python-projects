@@ -7,14 +7,12 @@ else:
     import project.Files.files as files
 
 class FilesApp(ctk.CTkFrame):
-    def __init__(self, master):
+    def __init__(self, master, **kwargs):
         logging.info('FilesApp object was created')
-        super().__init__(master)
+        super().__init__(master, **kwargs)
 
-        # Init window settings
-        # self.title('Files app')
-        # self.geometry('700x500')
-        self.columnconfigure((0, 1), weight=1)
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
 
         # Current working directory
         self.cwd = Path.cwd()
@@ -38,8 +36,8 @@ class FilesApp(ctk.CTkFrame):
         self.src_path = None
 
         # Child directories inside cwd
-        self.dirs_frame = ctk.CTkScrollableFrame(self, width=400, height=300, border_width=1, border_color="black")
-        self.dirs_frame.grid(column=0, row=1, columnspan=2, sticky="we")
+        self.dirs_frame = ctk.CTkScrollableFrame(self, border_width=1, border_color="black")
+        self.dirs_frame.grid(column=0, row=1, sticky="nswe")
         self.dirs_frame.bind('<Button-3>', self.__popup_general_command())
         self.inner_dirs_btns = self.__form_inner_dirs()
         self.__grid_all(self.inner_dirs_btns, first_row=1)

@@ -1,5 +1,10 @@
-import customtkinter as ctk, openpyxl as xl, logging, project.Excel.excel as excel, tkinter as tk
+import customtkinter as ctk, openpyxl as xl, logging,tkinter as tk
 from tkinter import filedialog
+
+if __name__ == '__main__':
+   import excel 
+else:
+    import  project.Excel.excel as excel 
 
 # Frame with excel table
 class ExcelFileFrame(ctk.CTkTabview):
@@ -12,31 +17,33 @@ class ExcelFileFrame(ctk.CTkTabview):
         self.canvases = {}
 
         
-    def _scroll_y(self, e):
-        canvas = self.canvases[self.get()]
+    def __scroll_y(self, e):
+        tab_name = self.get()
+        canvas = self.canvases[tab_name] if tab_name else None
         if canvas:
             canvas.yview_scroll(int(-1*(e.delta/120)), 'units')
 
-    def _scroll_x(self, e):
-        canvas = self.canvases[self.get()]
+    def __scroll_x(self, e):
+        tab_name = self.get()
+        canvas = self.canvases[tab_name] if tab_name else None
         if canvas:
             canvas.xview_scroll(int(-1*(e.delta/120)), 'units')
 
-    def _next_tab(self, e):
+    def __next_tab(self, e):
         current_tab_ind = self.tabs.index(self.get())
         if current_tab_ind >= len(self.tabs) - 1:
             self.set(self.tabs[0])
         else:
             self.set(self.tabs[current_tab_ind + 1])
     
-    def _prev_tab(self, e):
+    def __prev_tab(self, e):
         current_tab_ind = self.tabs.index(self.get())
         if current_tab_ind <= 0:
             self.set(self.tabs[len(self.tabs) - 1])
         else:
             self.set(self.tabs[current_tab_ind - 1])
 
-    def _add_new_tab(self, tab_name):
+    def __add_new_tab(self, tab_name):
         self.add(tab_name)
         # Canvas inside of the frame
         canvas = ctk.CTkCanvas(self.tab(tab_name)) 
@@ -58,12 +65,12 @@ class ExcelFileFrame(ctk.CTkTabview):
         frame = ctk.CTkFrame(canvas)
         canvas.create_window(0, 0, anchor="nw", window=frame)
         frame.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
-        frame.bind('<Control-KeyPress-Tab>', self._next_tab)
-        frame.bind('<Shift-Control-KeyPress-Tab>', self._prev_tab)
+        frame.bind('<Control-KeyPress-Tab>', self.__next_tab)
+        frame.bind('<Shift-Control-KeyPress-Tab>', self.__prev_tab)
 
         # Binding scrollig to mousewheel
-        canvas.bind_all('<MouseWheel>', self._scroll_y)
-        canvas.bind_all('<Shift-MouseWheel>', self._scroll_x)
+        canvas.bind_all('<MouseWheel>', self.__scroll_y)
+        canvas.bind_all('<Shift-MouseWheel>', self.__scroll_x)
 
         self.canvases[tab_name] = canvas
         self.tabs.append(tab_name)
@@ -92,7 +99,7 @@ class ExcelFileFrame(ctk.CTkTabview):
         for sheet in workbook.sheetnames:
             current_sheet = workbook[sheet]
 
-            frame = self._add_new_tab(sheet)
+            frame = self.__add_new_tab(sheet)
 
             for row in current_sheet.iter_rows(min_row=0, max_row=current_sheet.max_row):
                 for cell in row:
@@ -115,7 +122,7 @@ class ExcelFileFrame(ctk.CTkTabview):
         
         logging.info(f"Loading workbook {file_id}")
         for sheet_name, sheet in workbook.items():
-            current_sheet = self._add_new_tab(sheet_name)
+            current_sheet = self.__add_new_tab(sheet_name)
             for row_ind, row in enumerate(sheet):
                 for column_ind, cell in enumerate(row):
                     if (cell != None):
