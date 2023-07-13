@@ -90,8 +90,8 @@ class ConverterFrame(ctk.CTkFrame):
 
 
 class MoneyApp(ctk.CTkFrame):
-    def __init__(self, master):
-        super().__init__(master)
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
         
         # Label showing current exchange rate
         self.exchange_rate_lbl = ctk.CTkLabel(self, text='Money app!', font=('Arial', 25))
