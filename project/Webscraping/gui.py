@@ -1,4 +1,10 @@
-import customtkinter as ctk, re, logging, project.Webscraping.webscraping as webscraping, project.Webscraping.currency as currency 
+import customtkinter as ctk, re, logging
+
+if __name__ == '__main__':
+    import webscraping, currency
+else:
+    import project.Webscraping.webscraping as webscraping, project.Webscraping.currency as currency 
+
 
 # Currency converter frame
 class ConverterFrame(ctk.CTkFrame):
@@ -129,5 +135,12 @@ def get_new_exchange_rate(cache=True):
 
 if __name__ == '__main__':
     logging.basicConfig(filename='gui.log', filemode='w', level=logging.INFO, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
-    app = MoneyApp()
-    app.mainloop()
+    a = ctk.CTk()
+    a.geometry("1024x800")
+    a.rowconfigure(0, weight=1)
+    a.columnconfigure(0, weight=1)
+    a.resizable(False, False)
+
+    app = MoneyApp(master=a)
+    app.grid(row=0, column=0, sticky='nswe')
+    a.mainloop()
