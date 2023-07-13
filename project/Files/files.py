@@ -16,13 +16,16 @@ class FileManipulator():
         # Checks if [src] exists
         if Path(p / src).exists():
             try:
-                if dest_path.exists():
-                    dest_path = dest_path.with_stem(dest_path.stem + '(1)')
+                count = 1
+                dest_path_temp = dest_path
+                while dest_path_temp.exists():
+                    dest_path_temp = dest_path.with_stem(f'{dest_path.stem}({count})')
+                    count += 1
 
                 if Path(p / src).is_dir():
-                    shutil.copytree(p / src, dest_path)
+                    shutil.copytree(p / src, dest_path_temp)
                 else:
-                    shutil.copy(p / src, dest_path)
+                    shutil.copy(p / src, dest_path_temp)
             # If dest contains folders that doesn't exist
             # then create them
             except FileNotFoundError:
@@ -48,9 +51,13 @@ class FileManipulator():
         # Checks if [src] exists
         if Path(p / src).exists():
             try:
-                if dest_path.exists():
-                    dest_path = dest_path.with_stem(dest_path.stem + '(1)')
-                shutil.move(p / src, dest_path)
+                count = 1
+                dest_path_temp = dest_path
+                while dest_path_temp.exists():
+                    dest_path_temp = dest_path.with_stem(f'{dest_path.stem}({count})')
+                    count += 1
+
+                shutil.move(p / src, dest_path_temp)
             # If dest contains folders that doesn't exist
             # then create them
             except FileNotFoundError:
