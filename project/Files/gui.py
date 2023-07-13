@@ -1,5 +1,10 @@
-import customtkinter as ctk, logging, tkinter as tk, project.Files.files as files
+import customtkinter as ctk, logging, tkinter as tk 
 from pathlib import Path
+
+if __name__ == '__main__':
+    import files
+else:
+    import project.Files.files as files
 
 class FilesApp(ctk.CTkFrame):
     def __init__(self, master):
@@ -73,7 +78,7 @@ class FilesApp(ctk.CTkFrame):
     # Callback for files popup appearance
     def __popup_file_command(self, dir: ctk.CTkButton):
         def popup_file_command(event):
-            self.popup_file.ctk_popup(event.x_root, event.y_root)
+            self.popup_file.tk_popup(event.x_root, event.y_root)
             self.selected_dir = dir
             logging.debug(f'Current selected dir is {dir.cget("text")}')
         return popup_file_command
@@ -81,7 +86,7 @@ class FilesApp(ctk.CTkFrame):
     # Callbak for general popup appearance
     def __popup_general_command(self):
         def popup_general_command(event):
-            self.popup_general.ctk_popup(event.x_root, event.y_root)
+            self.popup_general.tk_popup(event.x_root, event.y_root)
             logging.debug('General popup was activated')
         return popup_general_command
 
@@ -138,3 +143,15 @@ class FilesApp(ctk.CTkFrame):
         for i in range(len(objects)):
             objects[i].grid(column=0, row=i+first_row, columnspan=2, sticky='we', padx=10)
  
+if __name__ == '__main__':
+    logging.basicConfig(filename='files_gui.log', filemode='w', level=logging.DEBUG, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
+    a = ctk.CTk()
+    a.geometry("1024x800")
+    a.rowconfigure(0, weight=1)
+    a.columnconfigure(0, weight=1)
+    a.resizable(False, False)
+
+    app = FilesApp(master=a)
+    app.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
+
+    a.mainloop()
