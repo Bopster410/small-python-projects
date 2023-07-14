@@ -10,33 +10,33 @@ from googleapiclient.http import MediaIoBaseDownload
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
               'https://www.googleapis.com/auth/drive']
 
-def google_auth():
+def google_auth(token_path, creds_path):
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists('test_data/token.json'):
+    if os.path.exists(token_path):
         creds = Credentials.from_authorized_user_file(
-            'test_data/token.json', SCOPES)
+            token_path, SCOPES)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             try:
                 creds.refresh(Request())
             except:
-                flow = InstalledAppFlow.from_client_secrets_file('test_data/epic_client.json', SCOPES)
+                flow = InstalledAppFlow.from_client_secrets_file(creds_path, SCOPES)
                 creds = flow.run_local_server(port=0)
         else:
-            flow = InstalledAppFlow.from_client_secrets_file('test_data/epic_client.json', SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file(creds_path, SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open('test_data/token.json', 'w') as token:
+        with open(token_path, 'w') as token:
             token.write(creds.to_json())
     return creds
 
 
-def load_from_drive(file_id, saveas_name):
-    creds = google_auth()
+def load_from_drive(file_id, saveas_name, token_path, creds_path):
+    creds = google_auth(token_path, creds_path)
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
@@ -60,8 +60,8 @@ def load_from_drive(file_id, saveas_name):
         input.write(file.getvalue())
 
 
-def read_from_sheet(file_id):
-    creds = google_auth()
+def read_from_sheet(file_id, token_path, creds_path):
+    creds = google_auth(token_path, creds_path)
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.

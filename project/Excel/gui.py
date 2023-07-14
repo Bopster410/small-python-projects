@@ -111,10 +111,10 @@ class ExcelFileFrame(ctk.CTkTabview):
                         current_cell.grid(row=cell.column, column=cell.row)
 
     # Extracts table from the drive file
-    def reload_workbook_drive(self, file_id, sheet):
+    def reload_workbook_drive(self, file_id, sheet, token_path, creds_path):
         self.delete_workbook()
 
-        workbook = excel.read_from_sheet(file_id)
+        workbook = excel.read_from_sheet(file_id, token_path=token_path, creds_path=creds_path)
 
         if not workbook:
             logging.warning('Something went wrong while loading the workbook')
@@ -172,7 +172,7 @@ class ExcelApp(ctk.CTkFrame):
 
     # Extracting table from the local file
     def load_local_command(self):
-        file_name = filedialog.askopenfilename()
+        file_name = filedialog.askopenfilename(title='Choose file', filetypes=[('Excel', '.xlsx .xlsm .xltx .xltm')])
         if file_name:
             logging.info(f'Extracting local file with name {file_name}')
             self.excel_file.reload_workbook_local(file_name, 'ИУ4-23Б')
@@ -185,7 +185,13 @@ class ExcelApp(ctk.CTkFrame):
         input = dialog.get_input()
         if input:
             logging.info(f'Extracting drive file with id {input}')
-            self.excel_file.reload_workbook_drive(input, 'ИУ4-23Б')
+            if __name__ == '__main__':
+                token_path = 'test_data/token.json'
+                creds_path = 'test_data/epic_client.json'
+            else:
+                token_path = 'project/Excel/test_data/token.json'
+                creds_path = 'project/Excel/test_data/epic_client.json' 
+            self.excel_file.reload_workbook_drive(input, 'ИУ4-23Б', token_path=token_path, creds_path=creds_path)
         else:
             logging.warning('Extracting process was interrupted')
                 
@@ -195,10 +201,16 @@ class ExcelApp(ctk.CTkFrame):
         input = dialog.get_input()
         if input:
             logging.info(f'Downloading file with id {input}')
-            file_name = filedialog.asksaveasfilename()
+            file_name = filedialog.asksaveasfilename(title='Save as', filetypes=[('Excel', '.xlsx .xlsm .xltx .xltm')])
             if file_name:
                 logging.info(f'Saving file as {file_name}')
-                excel.load_from_drive(input, file_name)
+                if __name__ == '__main__':
+                    token_path = 'test_data/token.json'
+                    creds_path = 'test_data/epic_client.json'
+                else:
+                    token_path = 'project/Excel/test_data/token.json'
+                    creds_path = 'project/Excel/test_data/epic_client.json'
+                excel.load_from_drive(input, file_name, token_path=token_path, creds_path=creds_path)
             else:
                 logging.warning('Saving process was interrupted')
         else:
