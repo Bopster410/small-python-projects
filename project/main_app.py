@@ -6,7 +6,7 @@ import customtkinter as ctk
 class MainApp(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.geometry('800x600')
+        self.geometry('1024x800')
         self.title('epic')
         self.rowconfigure(1, weight=1)
         self.columnconfigure((0, 1, 2), weight=1)
