@@ -120,7 +120,9 @@ def get_new_exchange_rate(cache=True):
 #         rubles = float(web_scraping_result.replace(',', '.'))
 #     else:
 #         rubles = 0
-    ws = webscraping.WebScraper()
+    with open('api_key') as api_key_file:
+        api_key = api_key_file.readline()
+    ws = webscraping.WebScraper(api_key)
     url = 'https://api.apilayer.com/fixer/latest'
     params = {'base': 'USD', 'symbols': 'RUB'}
     result = ws.use_api(url, params, cache)

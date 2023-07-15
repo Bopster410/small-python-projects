@@ -2,9 +2,9 @@ import logging, webbrowser, shelve, bs4, requests
 
 
 class WebScraper():
-    def __init__(self):
+    def __init__(self, api_key):
         logging.info("WebScraper object has been created")
-        self.api_key = 'kyQLr1wkOlVUFlyR0wApjQFUCGarFNVh'
+        self.api_key = api_key
     
     def get_html(self, name, local=False):
         if local:
@@ -79,5 +79,6 @@ class WebPages():
 
 if __name__ == '__main__':
     logging.basicConfig(filename='files.log', filemode='w', level=logging.INFO, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
-    ws = WebScraper()
+    with open('api_key') as api_ley_file:
+        ws = WebScraper(api_ley_file.readline)
     
