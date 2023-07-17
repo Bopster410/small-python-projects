@@ -1,6 +1,6 @@
 import logging
 
-def TasksManager():
+class TasksManager():
     def __init__(self):
         logging.info('TasksManager object has been created')
 
