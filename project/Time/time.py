@@ -23,7 +23,7 @@ class TaskWidget(ctk.CTkFrame):
         self.text.set(f'{self.task_name}: {self.current_time}')
 
 
-class TasksManager(ctk.CTkScrollableFrame):
+class TasksManager(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, fg_color='transparent', **kwargs)
         logging.info('TasksManager object has been created')
