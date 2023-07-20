@@ -72,6 +72,7 @@ if __name__ == '__main__':
     window.geometry('1024x800')
     window.rowconfigure(0, weight=1)
     window.columnconfigure(0, weight=1)
+    window.resizable(False, False)
 
     tm = TasksManager(window)
     tm.add_task('work', 5)
