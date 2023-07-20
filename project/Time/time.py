@@ -8,7 +8,7 @@ class TaskWidget(ctk.CTkFrame):
         self.current_time = time
         self.text = ctk.StringVar(value=f'{self.task_name}: {self.current_time}')
         self.label = ctk.CTkLabel(self, textvariable=self.text, font=('Arial', 20))
-        self.label.grid(row=0, column=0, sticky='e')
+        self.label.grid(row=0, column=0, sticky='w')
     
     def reset_time(self):
         self.current_time = self.time
@@ -25,11 +25,21 @@ class TaskWidget(ctk.CTkFrame):
 
 class TasksManager(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
+        # Configuring grid
         super().__init__(master, fg_color='transparent', **kwargs)
         logging.info('TasksManager object has been created')
-        self.tasks_widgets = []
+        self.rowconfigure(1, weight=1)
+        self.columnconfigure(0, weight=1)
+
+        # Start tasks button
         self.start_btn = ctk.CTkButton(self, text='start', command=self.execute_tasks)
-        self.start_btn.grid(row=0, column=0)
+        self.start_btn.grid(row=0, column=0, sticky='w', padx=5, pady=5)
+
+        # Tasks frame
+        self.tasks_widgets = []
+        self.tasks_frame = ctk.CTkScrollableFrame(self, fg_color='transparent')
+        self.tasks_frame.rowconfigure(0, weight=1)
+        self.tasks_frame.grid(row=1, column=0, sticky='nsew')
     
     def reload_tasks_time(self):
         for task in self.tasks_widgets:
@@ -44,7 +54,7 @@ class TasksManager(ctk.CTkFrame):
 
     def add_task(self, name, length):
         if len(name) > 0:
-            self.tasks_widgets.append(TaskWidget(name, length, self))
+            self.tasks_widgets.append(TaskWidget(name, length, self.tasks_frame))
     
     def execute_tasks(self):
         self.reload_tasks_time()
