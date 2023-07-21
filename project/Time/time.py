@@ -23,6 +23,21 @@ class TaskWidget(ctk.CTkFrame):
         self.text.set(f'{self.task_name}: {self.current_time}')
 
 
+class AddTaskDialog(ctk.CTkToplevel):
+    def __init__(self, master):
+        super().__init__(master)
+
+        self.lift()
+        self.attributes('-topmost', True)
+        self.grab_set()
+
+        self.label = ctk.CTkLabel(self, text='hi hi hi (hello world)')
+        self.label.pack()
+    
+    def get_input(self):
+        self.master.wait_window(self)
+
+
 class TasksManager(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         # Configuring grid
@@ -67,6 +82,8 @@ class TasksManager(ctk.CTkFrame):
 
     def __add_task_menu(self):
         logging.info('Add task method')
+        dialog = AddTaskDialog(self)
+        dialog.get_input()
 
     def __execute_tasks(self):
         self.start_btn.configure(state='disabled')
