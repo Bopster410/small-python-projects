@@ -38,28 +38,36 @@ class AddTaskDialog(ctk.CTkToplevel):
         self.resizable(False, False)
         # Make other windows not clickable
         self.grab_set()
+
+        self._user_input = None
     
     def _create_widgets(self):
         self.columnconfigure((0, 1), weight=1)
         self.rowconfigure(0, weight=1)
 
-        self.label = ctk.CTkLabel(self, text='Enter new task name and its length in seconds:', font=('Arial', 20))
-        self.label.grid(row=0, column=0, columnspan=2, pady=30, sticky='nsew')
+        self._label = ctk.CTkLabel(self, text='Enter new task name and its length in seconds:', font=('Arial', 20))
+        self._label.grid(row=0, column=0, columnspan=2, pady=30, sticky='nsew')
 
-        self.name_entry = ctk.CTkEntry(self, placeholder_text='name')
-        self.name_entry.grid(row=1, column=0, padx=(15, 5), pady=(0, 20), sticky='we')
+        self._name_entry = ctk.CTkEntry(self, placeholder_text='name')
+        self._name_entry.grid(row=1, column=0, padx=(15, 5), pady=(0, 20), sticky='we')
 
-        self.time_entry = ctk.CTkEntry(self, placeholder_text='time')
-        self.time_entry.grid(row=1, column=1, padx=(5, 15), pady=(0, 20), sticky='we')
+        self._time_entry = ctk.CTkEntry(self, placeholder_text='time')
+        self._time_entry.grid(row=1, column=1, padx=(5, 15), pady=(0, 20), sticky='we')
         
-        self.enter_btn = ctk.CTkButton(self, text='Enter', command=self.enter_command)
-        self.enter_btn.grid(row=2, column=0, columnspan=2, padx=15, pady=(0, 60), sticky='we')
+        self._enter_btn = ctk.CTkButton(self, text='Enter', command=self.enter_command)
+        self._enter_btn.grid(row=2, column=0, columnspan=2, padx=15, pady=(0, 60), sticky='we')
     
     def enter_command(self):
         logging.info('enter button was clicked')
+        name = self._name_entry.get()
+        time = self._time_entry.get()
+        self._user_input = None if name == '' or time == '' else (name, int(time))
+        self.grab_release()
+        self.destroy()
 
     def get_input(self):
         self.master.wait_window(self)
+        return self._user_input
 
 
 class TasksManager(ctk.CTkFrame):
@@ -107,7 +115,11 @@ class TasksManager(ctk.CTkFrame):
     def __add_task_menu(self):
         logging.info('Add task method')
         dialog = AddTaskDialog(self)
-        dialog.get_input()
+        input = dialog.get_input()
+        if input != None:
+            logging.info(f'input: name - {input[0]}, time - {input[1]}')
+        else:
+            logging.warning(f'wrong input')
 
     def __execute_tasks(self):
         self.start_btn.configure(state='disabled')
