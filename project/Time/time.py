@@ -26,7 +26,7 @@ class TaskWidget(ctk.CTkFrame):
 class AddTaskDialog(ctk.CTkToplevel):
     def __init__(self, master):
         super().__init__(master)
-        self.geometry('800x640')
+        self.geometry('600x300')
 
         # Lift window on top
         self.lift()
@@ -40,12 +40,24 @@ class AddTaskDialog(ctk.CTkToplevel):
         self.grab_set()
     
     def _create_widgets(self):
-        self.columnconfigure(0, weight=1)
+        self.columnconfigure((0, 1), weight=1)
         self.rowconfigure(0, weight=1)
 
-        self.label = ctk.CTkLabel(self, text='hi hi hi (hello world)')
-        self.label.grid(row=0, column=0, sticky='nsew')
+        self.label = ctk.CTkLabel(self, text='Enter new task name and its length in seconds:', font=('Arial', 20))
+        self.label.grid(row=0, column=0, columnspan=2, pady=30, sticky='nsew')
+
+        self.name_entry = ctk.CTkEntry(self, placeholder_text='name')
+        self.name_entry.grid(row=1, column=0, padx=(15, 5), pady=(0, 20), sticky='we')
+
+        self.time_entry = ctk.CTkEntry(self, placeholder_text='time')
+        self.time_entry.grid(row=1, column=1, padx=(5, 15), pady=(0, 20), sticky='we')
+        
+        self.enter_btn = ctk.CTkButton(self, text='Enter', command=self.enter_command)
+        self.enter_btn.grid(row=2, column=0, columnspan=2, padx=15, pady=(0, 60), sticky='we')
     
+    def enter_command(self):
+        logging.info('enter button was clicked')
+
     def get_input(self):
         self.master.wait_window(self)
 
@@ -109,7 +121,6 @@ class TasksManager(ctk.CTkFrame):
         logging.debug('end executing tasks')
         self.start_btn.configure(state='enabled')
             
-
 
 if __name__ == '__main__':
     logging.basicConfig(filename='time.log', filemode='w', level=logging.INFO, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
