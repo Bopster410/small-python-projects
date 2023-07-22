@@ -26,13 +26,25 @@ class TaskWidget(ctk.CTkFrame):
 class AddTaskDialog(ctk.CTkToplevel):
     def __init__(self, master):
         super().__init__(master)
+        self.geometry('800x640')
 
+        # Lift window on top
         self.lift()
+        # Stay on top
         self.attributes('-topmost', True)
+        # Create widgets with slight delay, to avoid white flickering of background
+        self.after(10, self._create_widgets)  
+        # Not resizable
+        self.resizable(False, False)
+        # Make other windows not clickable
         self.grab_set()
+    
+    def _create_widgets(self):
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
 
         self.label = ctk.CTkLabel(self, text='hi hi hi (hello world)')
-        self.label.pack()
+        self.label.grid(row=0, column=0, sticky='nsew')
     
     def get_input(self):
         self.master.wait_window(self)
