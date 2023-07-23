@@ -1,7 +1,8 @@
 import logging, time, customtkinter as ctk, threading
+from collections import namedtuple
 
 class TaskWidget(ctk.CTkFrame):
-    def __init__(self, name, time, master, **kwargs):
+    def __init__(self, name, time, delete_command, master, **kwargs):
         super().__init__(master=master, **kwargs)
         self.task_name = name
         self.time = time
@@ -9,6 +10,8 @@ class TaskWidget(ctk.CTkFrame):
         self.text = ctk.StringVar(value=f'{self.task_name}: {self.current_time}')
         self.label = ctk.CTkLabel(self, textvariable=self.text, font=('Arial', 20))
         self.label.grid(row=0, column=0, sticky='w')
+        self.delete_btn = ctk.CTkButton(self, text='X', width=40, command=delete_command)
+        self.delete_btn.grid(row=0, column=1, padx=(15, 0))
     
     def reset_time(self):
         self.current_time = self.time
@@ -54,14 +57,14 @@ class AddTaskDialog(ctk.CTkToplevel):
         self._time_entry = ctk.CTkEntry(self, placeholder_text='time')
         self._time_entry.grid(row=1, column=1, padx=(5, 15), pady=(0, 20), sticky='we')
         
-        self._enter_btn = ctk.CTkButton(self, text='Enter', command=self.enter_command)
+        self._enter_btn = ctk.CTkButton(self, text='Enter', command=self._enter_command)
         self._enter_btn.grid(row=2, column=0, columnspan=2, padx=15, pady=(0, 60), sticky='we')
     
-    def enter_command(self):
+    def _enter_command(self):
         logging.info('enter button was clicked')
         name = self._name_entry.get()
         time = self._time_entry.get()
-        self._user_input = None if name == '' or time == '' else (name, int(time))
+        self._user_input = None if name == '' or time == '' else namedtuple('Input', ['name', 'time'])(name, int(time))
         self.grab_release()
         self.destroy()
 
@@ -83,7 +86,7 @@ class TasksManager(ctk.CTkFrame):
         self.start_btn.grid(row=0, column=0, sticky='w', padx=5, pady=5)
 
         # Add task button
-        self.add_task_btn = ctk.CTkButton(self, text='+', width=40, command=self.__add_task_menu)
+        self.add_task_btn = ctk.CTkButton(self, text='+', width=40, command=self._add_task_menu)
         self.add_task_btn.grid(row=0, column=1, sticky='w')
 
         # Tasks frame
@@ -95,34 +98,46 @@ class TasksManager(ctk.CTkFrame):
     def reload_tasks_time(self):
         for task in self.tasks_widgets:
             task.reset_time()
+
+    def add_task(self, name, length):
+        if len(name) > 0:
+            self.tasks_widgets.append(TaskWidget(name, length, self.create_delete_task(name), self.tasks_frame))
+
+    def delete_task(self, name):
+        logging.info(f'Deleting {name} task')
+
+    def create_delete_task(self, name):
+        def delete_task():
+            self.delete_task(name)
+        
+        return delete_task
     
-    def reload_tasks_grid(self):
+    def execute_tasks(self):
+        self.reload_tasks_time()
+        thread = threading.Thread(target=self._execute_tasks)
+        thread.start()
+
+    def _reload_tasks_grid(self):
         for task_widget in self.tasks_widgets:
             task_widget.grid_forget()
 
         for row_ind, task_widget in enumerate(self.tasks_widgets):
             task_widget.grid(row=row_ind+1, column=0, sticky='ew', pady=10, padx=20)
 
-    def add_task(self, name, length):
-        if len(name) > 0:
-            self.tasks_widgets.append(TaskWidget(name, length, self.tasks_frame))
-    
-    def execute_tasks(self):
-        self.reload_tasks_time()
-        thread = threading.Thread(target=self.__execute_tasks)
-        thread.start()
-
-    def __add_task_menu(self):
+    def _add_task_menu(self):
         logging.info('Add task method')
         dialog = AddTaskDialog(self)
         input = dialog.get_input()
         if input != None:
-            logging.info(f'input: name - {input[0]}, time - {input[1]}')
+            logging.info(f'input: name - {input.name}, time - {input.time}')
+            self.add_task(*input)
+            self._reload_tasks_grid()
         else:
             logging.warning(f'wrong input')
 
-    def __execute_tasks(self):
+    def _execute_tasks(self):
         self.start_btn.configure(state='disabled')
+        self.add_task_btn.configure(state='disabled')
         logging.debug('Started executing tasks...')
         for task in self.tasks_widgets:
             logging.debug(f'executing next task {task.task_name}')
@@ -132,6 +147,7 @@ class TasksManager(ctk.CTkFrame):
                 logging.debug(f'{task.task_name}: {task.time}')
         logging.debug('end executing tasks')
         self.start_btn.configure(state='enabled')
+        self.add_task_btn.configure(state='enabled')
             
 
 if __name__ == '__main__':
@@ -146,7 +162,7 @@ if __name__ == '__main__':
     tm = TasksManager(window)
     tm.add_task('work', 5)
     tm.add_task('rest', 2)
-    tm.reload_tasks_grid()
+    tm._reload_tasks_grid()
     tm.grid(row=0, column=0, sticky='nswe')
     
     window.mainloop()
