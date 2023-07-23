@@ -55,10 +55,10 @@ class AddTaskDialog(ctk.CTkToplevel):
         self._time_entry = ctk.CTkEntry(self, placeholder_text='time')
         self._time_entry.grid(row=1, column=1, padx=(5, 15), pady=(0, 20), sticky='we')
         
-        self._enter_btn = ctk.CTkButton(self, text='Enter', command=self.enter_command)
+        self._enter_btn = ctk.CTkButton(self, text='Enter', command=self._enter_command)
         self._enter_btn.grid(row=2, column=0, columnspan=2, padx=15, pady=(0, 60), sticky='we')
     
-    def enter_command(self):
+    def _enter_command(self):
         logging.info('enter button was clicked')
         name = self._name_entry.get()
         time = self._time_entry.get()
@@ -96,13 +96,6 @@ class TasksManager(ctk.CTkFrame):
     def reload_tasks_time(self):
         for task in self.tasks_widgets:
             task.reset_time()
-    
-    def reload_tasks_grid(self):
-        for task_widget in self.tasks_widgets:
-            task_widget.grid_forget()
-
-        for row_ind, task_widget in enumerate(self.tasks_widgets):
-            task_widget.grid(row=row_ind+1, column=0, sticky='ew', pady=10, padx=20)
 
     def add_task(self, name, length):
         if len(name) > 0:
@@ -113,6 +106,13 @@ class TasksManager(ctk.CTkFrame):
         thread = threading.Thread(target=self._execute_tasks)
         thread.start()
 
+    def _reload_tasks_grid(self):
+        for task_widget in self.tasks_widgets:
+            task_widget.grid_forget()
+
+        for row_ind, task_widget in enumerate(self.tasks_widgets):
+            task_widget.grid(row=row_ind+1, column=0, sticky='ew', pady=10, padx=20)
+
     def _add_task_menu(self):
         logging.info('Add task method')
         dialog = AddTaskDialog(self)
@@ -120,7 +120,7 @@ class TasksManager(ctk.CTkFrame):
         if input != None:
             logging.info(f'input: name - {input.name}, time - {input.time}')
             self.add_task(*input)
-            self.reload_tasks_grid()
+            self._reload_tasks_grid()
         else:
             logging.warning(f'wrong input')
 
