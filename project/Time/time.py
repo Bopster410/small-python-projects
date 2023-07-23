@@ -2,7 +2,7 @@ import logging, time, customtkinter as ctk, threading
 from collections import namedtuple
 
 class TaskWidget(ctk.CTkFrame):
-    def __init__(self, name, time, master, **kwargs):
+    def __init__(self, name, time, delete_command, master, **kwargs):
         super().__init__(master=master, **kwargs)
         self.task_name = name
         self.time = time
@@ -10,6 +10,8 @@ class TaskWidget(ctk.CTkFrame):
         self.text = ctk.StringVar(value=f'{self.task_name}: {self.current_time}')
         self.label = ctk.CTkLabel(self, textvariable=self.text, font=('Arial', 20))
         self.label.grid(row=0, column=0, sticky='w')
+        self.delete_btn = ctk.CTkButton(self, text='X', width=40, command=delete_command)
+        self.delete_btn.grid(row=0, column=1, padx=(15, 0))
     
     def reset_time(self):
         self.current_time = self.time
@@ -99,7 +101,16 @@ class TasksManager(ctk.CTkFrame):
 
     def add_task(self, name, length):
         if len(name) > 0:
-            self.tasks_widgets.append(TaskWidget(name, length, self.tasks_frame))
+            self.tasks_widgets.append(TaskWidget(name, length, self.create_delete_task(name), self.tasks_frame))
+
+    def delete_task(self, name):
+        logging.info(f'Deleting {name} task')
+
+    def create_delete_task(self, name):
+        def delete_task():
+            self.delete_task(name)
+        
+        return delete_task
     
     def execute_tasks(self):
         self.reload_tasks_time()
@@ -151,7 +162,7 @@ if __name__ == '__main__':
     tm = TasksManager(window)
     tm.add_task('work', 5)
     tm.add_task('rest', 2)
-    tm.reload_tasks_grid()
+    tm._reload_tasks_grid()
     tm.grid(row=0, column=0, sticky='nswe')
     
     window.mainloop()
