@@ -119,11 +119,14 @@ class TasksManager(ctk.CTkFrame):
         input = dialog.get_input()
         if input != None:
             logging.info(f'input: name - {input.name}, time - {input.time}')
+            self.add_task(*input)
+            self.reload_tasks_grid()
         else:
             logging.warning(f'wrong input')
 
     def _execute_tasks(self):
         self.start_btn.configure(state='disabled')
+        self.add_task_btn.configure(state='disabled')
         logging.debug('Started executing tasks...')
         for task in self.tasks_widgets:
             logging.debug(f'executing next task {task.task_name}')
@@ -133,6 +136,7 @@ class TasksManager(ctk.CTkFrame):
                 logging.debug(f'{task.task_name}: {task.time}')
         logging.debug('end executing tasks')
         self.start_btn.configure(state='enabled')
+        self.add_task_btn.configure(state='enabled')
             
 
 if __name__ == '__main__':
