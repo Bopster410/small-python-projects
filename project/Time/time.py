@@ -4,14 +4,22 @@ from collections import namedtuple
 class TaskWidget(ctk.CTkFrame):
     def __init__(self, name, time, delete_command, master, **kwargs):
         super().__init__(master=master, **kwargs)
+        self.columnconfigure(0, weight=1)
+
         self.task_name = name
         self.time = time
         self.current_time = time
+
         self.text = ctk.StringVar(value=f'{self.task_name}: {self.current_time}')
         self.label = ctk.CTkLabel(self, textvariable=self.text, font=('Arial', 20))
         self.label.grid(row=0, column=0, sticky='w')
+
         self.delete_btn = ctk.CTkButton(self, text='X', width=40, command=delete_command)
         self.delete_btn.grid(row=0, column=1, padx=(15, 0))
+
+        self.progress_bar = ctk.CTkProgressBar(self, height=40, width=50, determinate_speed=1.5/time)
+        self.progress_bar.set(0)
+        self.progress_bar.grid(row=1, column=0, columnspan=2, sticky='we')
     
     def reset_time(self):
         self.current_time = self.time
@@ -101,7 +109,7 @@ class TasksManager(ctk.CTkFrame):
 
     def add_task(self, name, length):
         if len(name) > 0:
-            self.tasks_widgets.append(TaskWidget(name, length, self.create_delete_task(name), self.tasks_frame))
+            self.tasks_widgets.append(TaskWidget(name, length, self.create_delete_task(name), self.tasks_frame, width=400))
 
     def delete_task(self, name):
         logging.info(f'Deleting {name} task')
@@ -141,10 +149,15 @@ class TasksManager(ctk.CTkFrame):
         logging.debug('Started executing tasks...')
         for task in self.tasks_widgets:
             logging.debug(f'executing next task {task.task_name}')
+            task.progress_bar.set(0)
+            task.progress_bar.start()
             while task.current_time != 0:
                 time.sleep(1)
                 task.decrease()
                 logging.debug(f'{task.task_name}: {task.time}')
+            task.progress_bar.stop()
+            task.progress_bar.set(task.time)
+
         logging.debug('end executing tasks')
         self.start_btn.configure(state='enabled')
         self.add_task_btn.configure(state='enabled')
@@ -160,7 +173,7 @@ if __name__ == '__main__':
     window.resizable(False, False)
 
     tm = TasksManager(window)
-    tm.add_task('work', 5)
+    tm.add_task('work', 15)
     tm.add_task('rest', 2)
     tm._reload_tasks_grid()
     tm.grid(row=0, column=0, sticky='nswe')
