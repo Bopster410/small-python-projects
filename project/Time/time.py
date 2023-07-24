@@ -1,10 +1,12 @@
 import logging, time, customtkinter as ctk, threading
+from tkinter import ttk
 from collections import namedtuple
 
 class TaskWidget(ctk.CTkFrame):
     def __init__(self, name, time, delete_command, master, **kwargs):
         super().__init__(master=master, **kwargs)
         self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
 
         self.task_name = name
         self.time = time
@@ -17,7 +19,7 @@ class TaskWidget(ctk.CTkFrame):
         self.delete_btn = ctk.CTkButton(self, text='X', width=40, command=delete_command)
         self.delete_btn.grid(row=0, column=1, padx=(15, 0))
 
-        self.progress_bar = ctk.CTkProgressBar(self, height=40, width=50, determinate_speed=1.5/time)
+        self.progress_bar = ctk.CTkProgressBar(self, height=40, determinate_speed=1.5/time)
         self.progress_bar.set(0)
         self.progress_bar.grid(row=1, column=0, columnspan=2, sticky='we')
     
@@ -101,6 +103,7 @@ class TasksManager(ctk.CTkFrame):
         self.tasks_widgets = []
         self.tasks_frame = ctk.CTkScrollableFrame(self, fg_color='transparent')
         self.tasks_frame.rowconfigure(0, weight=1)
+        self.tasks_frame.columnconfigure(0, weight=1)
         self.tasks_frame.grid(row=1, column=0, columnspan=2, sticky='nsew')
     
     def reload_tasks_time(self):
@@ -109,7 +112,7 @@ class TasksManager(ctk.CTkFrame):
 
     def add_task(self, name, length):
         if len(name) > 0:
-            self.tasks_widgets.append(TaskWidget(name, length, self.create_delete_task(name), self.tasks_frame, width=400))
+            self.tasks_widgets.append(TaskWidget(name, length, self.create_delete_task(name), self.tasks_frame, width=400, height=200))
 
     def delete_task(self, name):
         logging.info(f'Deleting {name} task')
@@ -130,7 +133,7 @@ class TasksManager(ctk.CTkFrame):
             task_widget.grid_forget()
 
         for row_ind, task_widget in enumerate(self.tasks_widgets):
-            task_widget.grid(row=row_ind+1, column=0, sticky='ew', pady=10, padx=20)
+            task_widget.grid(row=row_ind+1, column=0, sticky='w', pady=10, padx=20)
 
     def _add_task_menu(self):
         logging.info('Add task method')
