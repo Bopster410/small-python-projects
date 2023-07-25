@@ -6,7 +6,7 @@ class TaskWidget(ctk.CTkFrame):
     def __init__(self, name, time, delete_command, master, **kwargs):
         super().__init__(master=master, **kwargs)
         self.columnconfigure(0, weight=1)
-        self.rowconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
 
         self.task_name = name
         self.time = time
@@ -20,7 +20,9 @@ class TaskWidget(ctk.CTkFrame):
         self.delete_btn.grid(row=0, column=1, padx=(15, 0))
 
         self.progress_bar = ttk.Progressbar(self, orient="horizontal", mode="determinate", variable=self.current_time, maximum=time)
-        self.progress_bar.grid(row=1, column=0, columnspan=2, sticky='we')
+        self.progress_bar.grid(row=1, column=0, columnspan=2, sticky='snwe')
+        
+        self.grid_propagate(0)
     
     def reset_time(self):
         self.current_time.set(self.time)
