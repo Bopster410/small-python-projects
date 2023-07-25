@@ -1,15 +1,6 @@
 import logging, time, customtkinter as ctk, threading
-from tkinter import ttk, IntVar
+from tkinter import ttk
 from collections import namedtuple
-
-# class TaskProgressBar(ttk.Progressbar):
-#     def __init__(self, master, maximum):
-#         super().__init__(master, orient='horizontal', mode='determinate', maximum=maximum * 20, value=0)
-#         self.step_bar = 1/maximum
-
-#     def start_bar(self):
-#         # self.step(self.step_bar)
-#         self.start(50)
 
 class TaskWidget(ctk.CTkFrame):
     def __init__(self, name, time, delete_command, master, **kwargs):
@@ -19,17 +10,15 @@ class TaskWidget(ctk.CTkFrame):
 
         self.task_name = name
         self.time = time
-        self.current_time = ctk.IntVar(value=time)
+        self.current_time = ctk.DoubleVar(value=time)
 
-        self.text = ctk.StringVar(value=f'{self.task_name}: {self.current_time.get()}')
+        self.text = ctk.StringVar(value=f'{self.task_name}: {int(self.current_time.get())}')
         self.label = ctk.CTkLabel(self, textvariable=self.text, font=('Arial', 20))
         self.label.grid(row=0, column=0, sticky='w')
 
         self.delete_btn = ctk.CTkButton(self, text='X', width=40, command=delete_command)
         self.delete_btn.grid(row=0, column=1, padx=(15, 0))
 
-        # self.progress_bar = ctk.CTkProgressBar(self, height=40, determinate_speed=1.5/time)
-        # self.progress_bar.set(0)
         self.progress_bar = ttk.Progressbar(self, orient="horizontal", mode="determinate", variable=self.current_time, maximum=time)
         self.progress_bar.grid(row=1, column=0, columnspan=2, sticky='we')
     
@@ -38,12 +27,12 @@ class TaskWidget(ctk.CTkFrame):
         self.update_label()
 
     def decrease(self):
-        if self.current_time.get() != 0:
-            self.current_time.set(self.current_time.get() - 1)
+        if self.current_time.get() > 0:
+            self.current_time.set(round(self.current_time.get() - 0.1, 1))
             self.update_label()
 
     def update_label(self):
-        self.text.set(f'{self.task_name}: {self.current_time.get()}')
+        self.text.set(f'{self.task_name}: {int(self.current_time.get())}')
 
 
 class AddTaskDialog(ctk.CTkToplevel):
@@ -163,7 +152,7 @@ class TasksManager(ctk.CTkFrame):
         for task in self.tasks_widgets:
             logging.debug(f'executing next task {task.task_name}')
             while task.current_time.get() != 0:
-                time.sleep(1)
+                time.sleep(0.1)
                 task.decrease()
                 logging.debug(f'{task.task_name}: {task.time}')
 
