@@ -1,29 +1,42 @@
 import logging, time, customtkinter as ctk, threading
+from tkinter import ttk
 from collections import namedtuple
 
 class TaskWidget(ctk.CTkFrame):
     def __init__(self, name, time, delete_command, master, **kwargs):
         super().__init__(master=master, **kwargs)
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
+
         self.task_name = name
         self.time = time
-        self.current_time = time
-        self.text = ctk.StringVar(value=f'{self.task_name}: {self.current_time}')
+        self.current_time = ctk.DoubleVar(value=time)
+
+        self.text = ctk.StringVar(value=f'{self.task_name}: {int(self.current_time.get())}')
         self.label = ctk.CTkLabel(self, textvariable=self.text, font=('Arial', 20))
         self.label.grid(row=0, column=0, sticky='w')
+
         self.delete_btn = ctk.CTkButton(self, text='X', width=40, command=delete_command)
         self.delete_btn.grid(row=0, column=1, padx=(15, 0))
+
+        self.progress_bar = ttk.Progressbar(self, orient="horizontal", mode="determinate", variable=self.current_time, maximum=time)
+        self.progress_bar.grid(row=1, column=0, columnspan=2, sticky='snwe')
+        
+        self.grid_propagate(0)
     
     def reset_time(self):
-        self.current_time = self.time
+        self.current_time.set(self.time)
         self.update_label()
 
     def decrease(self):
-        if self.current_time != 0:
-            self.current_time -= 1
+        if self.current_time.get() > 0:
+            self.current_time.set(round(self.current_time.get() - 0.1, 1))
             self.update_label()
 
     def update_label(self):
-        self.text.set(f'{self.task_name}: {self.current_time}')
+        current_time_double = self.current_time.get()
+        current_time_int = int(current_time_double)
+        self.text.set(f'{self.task_name}: {current_time_int + (current_time_int - current_time_double != 0)}')
 
 
 class AddTaskDialog(ctk.CTkToplevel):
@@ -93,6 +106,7 @@ class TasksManager(ctk.CTkFrame):
         self.tasks_widgets = []
         self.tasks_frame = ctk.CTkScrollableFrame(self, fg_color='transparent')
         self.tasks_frame.rowconfigure(0, weight=1)
+        self.tasks_frame.columnconfigure(0, weight=1)
         self.tasks_frame.grid(row=1, column=0, columnspan=2, sticky='nsew')
     
     def reload_tasks_time(self):
@@ -101,7 +115,7 @@ class TasksManager(ctk.CTkFrame):
 
     def add_task(self, name, length):
         if len(name) > 0:
-            self.tasks_widgets.append(TaskWidget(name, length, self.create_delete_task(name), self.tasks_frame))
+            self.tasks_widgets.append(TaskWidget(name, length, self.create_delete_task(name), self.tasks_frame, width=400, height=200))
 
     def delete_task(self, name):
         logging.info(f'Deleting {name} task')
@@ -122,7 +136,7 @@ class TasksManager(ctk.CTkFrame):
             task_widget.grid_forget()
 
         for row_ind, task_widget in enumerate(self.tasks_widgets):
-            task_widget.grid(row=row_ind+1, column=0, sticky='ew', pady=10, padx=20)
+            task_widget.grid(row=row_ind+1, column=0, sticky='w', pady=10, padx=20)
 
     def _add_task_menu(self):
         logging.info('Add task method')
@@ -141,10 +155,11 @@ class TasksManager(ctk.CTkFrame):
         logging.debug('Started executing tasks...')
         for task in self.tasks_widgets:
             logging.debug(f'executing next task {task.task_name}')
-            while task.current_time != 0:
-                time.sleep(1)
+            while task.current_time.get() != 0:
+                time.sleep(0.1)
                 task.decrease()
                 logging.debug(f'{task.task_name}: {task.time}')
+
         logging.debug('end executing tasks')
         self.start_btn.configure(state='enabled')
         self.add_task_btn.configure(state='enabled')
@@ -160,9 +175,13 @@ if __name__ == '__main__':
     window.resizable(False, False)
 
     tm = TasksManager(window)
-    tm.add_task('work', 5)
+    tm.add_task('work', 15)
     tm.add_task('rest', 2)
     tm._reload_tasks_grid()
     tm.grid(row=0, column=0, sticky='nswe')
     
+    # a = TaskProgressBar(window, 7)
+    # a.grid(row=0, column=0)
+    # a.start_bar()
+
     window.mainloop()
