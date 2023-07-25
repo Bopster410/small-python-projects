@@ -34,7 +34,9 @@ class TaskWidget(ctk.CTkFrame):
             self.update_label()
 
     def update_label(self):
-        self.text.set(f'{self.task_name}: {int(self.current_time.get())}')
+        current_time_double = self.current_time.get()
+        current_time_int = int(current_time_double)
+        self.text.set(f'{self.task_name}: {current_time_int + (current_time_int - current_time_double != 0)}')
 
 
 class AddTaskDialog(ctk.CTkToplevel):
