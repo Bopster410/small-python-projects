@@ -22,7 +22,6 @@ class TaskWidget(ctk.CTkFrame):
         self.progress_bar = ttk.Progressbar(self, orient="horizontal", mode="determinate", variable=self.current_time, maximum=time)
         self.progress_bar.grid(row=1, column=0, columnspan=2, sticky='snwe')
         
-        self.grid_propagate(0)
     
     def reset_time(self):
         self.current_time.set(self.time)
@@ -115,7 +114,8 @@ class TasksManager(ctk.CTkFrame):
 
     def add_task(self, name, length):
         if len(name) > 0:
-            self.tasks_widgets.append(TaskWidget(name, length, self.create_delete_task(name), self.tasks_frame, width=400, height=200))
+            new_task = TaskWidget(name, length, self.create_delete_task(name), self.tasks_frame, width=400, height=200)
+            self.tasks_widgets.append(new_task)
 
     def delete_task(self, name):
         logging.info(f'Deleting {name} task')
@@ -137,6 +137,7 @@ class TasksManager(ctk.CTkFrame):
 
         for row_ind, task_widget in enumerate(self.tasks_widgets):
             task_widget.grid(row=row_ind+1, column=0, sticky='w', pady=10, padx=20)
+            task_widget.grid_propagate(0)
 
     def _add_task_menu(self):
         logging.info('Add task method')
