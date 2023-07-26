@@ -16,14 +16,13 @@ class TaskWidget(ctk.CTkFrame):
         self.label = ctk.CTkLabel(self, textvariable=self.text, font=('Arial', 20))
         self.label.grid(row=0, column=0, sticky='w')
 
-        self.delete_btn = ctk.CTkButton(self, text='X', width=40, command=delete_command)
+        self.delete_btn = ctk.CTkButton(self, text='X', width=40, command=delete_command, fg_color='transparent', text_color='black', hover_color='#999999')
         self.delete_btn.grid(row=0, column=1, padx=(15, 0))
 
         self.progress_bar = ttk.Progressbar(self, orient="horizontal", mode="determinate", variable=self.current_time, maximum=time)
         self.progress_bar.grid(row=1, column=0, columnspan=2, sticky='snwe')
 
         
-    
     def reset_time(self):
         self.current_time.set(self.time)
         self.update_label()
