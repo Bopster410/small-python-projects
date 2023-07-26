@@ -21,6 +21,10 @@ class TaskWidget(ctk.CTkFrame):
 
         self.progress_bar = ttk.Progressbar(self, orient="horizontal", mode="determinate", variable=self.current_time, maximum=time)
         self.progress_bar.grid(row=1, column=0, columnspan=2, sticky='snwe')
+
+        self.style = ttk.Style(self)
+        self.style.theme_use('clam')
+        self.style.configure('Horizontal.TProgressbar', foreground='#007cca', background='#007cca')
         
     
     def reset_time(self):
