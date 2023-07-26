@@ -22,9 +22,6 @@ class TaskWidget(ctk.CTkFrame):
         self.progress_bar = ttk.Progressbar(self, orient="horizontal", mode="determinate", variable=self.current_time, maximum=time)
         self.progress_bar.grid(row=1, column=0, columnspan=2, sticky='snwe')
 
-        self.style = ttk.Style(self)
-        self.style.theme_use('clam')
-        self.style.configure('Horizontal.TProgressbar', foreground='#007cca', background='#007cca')
         
     
     def reset_time(self):
@@ -111,6 +108,10 @@ class TasksManager(ctk.CTkFrame):
         self.tasks_frame.rowconfigure(0, weight=1)
         self.tasks_frame.columnconfigure(0, weight=1)
         self.tasks_frame.grid(row=1, column=0, columnspan=2, sticky='nsew')
+    
+        self.style = ttk.Style(self)
+        self.style.theme_use('clam')
+        self.style.configure('Horizontal.TProgressbar', foreground='#007cca', background='#007cca')
     
     def reload_tasks_time(self):
         for task in self.tasks_widgets.values():
