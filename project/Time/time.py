@@ -16,14 +16,13 @@ class TaskWidget(ctk.CTkFrame):
         self.label = ctk.CTkLabel(self, textvariable=self.text, font=('Arial', 20))
         self.label.grid(row=0, column=0, sticky='w')
 
-        self.delete_btn = ctk.CTkButton(self, text='X', width=40, command=delete_command)
+        self.delete_btn = ctk.CTkButton(self, text='X', width=40, command=delete_command, fg_color='transparent', text_color='black', hover_color='#999999')
         self.delete_btn.grid(row=0, column=1, padx=(15, 0))
 
         self.progress_bar = ttk.Progressbar(self, orient="horizontal", mode="determinate", variable=self.current_time, maximum=time)
         self.progress_bar.grid(row=1, column=0, columnspan=2, sticky='snwe')
+
         
-        self.grid_propagate(0)
-    
     def reset_time(self):
         self.current_time.set(self.time)
         self.update_label()
@@ -103,22 +102,30 @@ class TasksManager(ctk.CTkFrame):
         self.add_task_btn.grid(row=0, column=1, sticky='w')
 
         # Tasks frame
-        self.tasks_widgets = []
+        self.tasks_widgets = {}
         self.tasks_frame = ctk.CTkScrollableFrame(self, fg_color='transparent')
         self.tasks_frame.rowconfigure(0, weight=1)
         self.tasks_frame.columnconfigure(0, weight=1)
         self.tasks_frame.grid(row=1, column=0, columnspan=2, sticky='nsew')
     
+        self.style = ttk.Style(self)
+        self.style.theme_use('clam')
+        self.style.configure('Horizontal.TProgressbar', foreground='#007cca', background='#007cca')
+    
     def reload_tasks_time(self):
-        for task in self.tasks_widgets:
+        for task in self.tasks_widgets.values():
             task.reset_time()
 
     def add_task(self, name, length):
         if len(name) > 0:
-            self.tasks_widgets.append(TaskWidget(name, length, self.create_delete_task(name), self.tasks_frame, width=400, height=200))
+            new_task = TaskWidget(name, length, self.create_delete_task(name), self.tasks_frame, width=400, height=200)
+            self.tasks_widgets[name] = new_task
 
     def delete_task(self, name):
         logging.info(f'Deleting {name} task')
+        if name in self.tasks_widgets:
+            self.tasks_widgets.pop(name).grid_forget()
+            self._reload_tasks_grid()
 
     def create_delete_task(self, name):
         def delete_task():
@@ -132,11 +139,12 @@ class TasksManager(ctk.CTkFrame):
         thread.start()
 
     def _reload_tasks_grid(self):
-        for task_widget in self.tasks_widgets:
+        for task_widget in self.tasks_widgets.values():
             task_widget.grid_forget()
 
-        for row_ind, task_widget in enumerate(self.tasks_widgets):
+        for row_ind, task_widget in enumerate(self.tasks_widgets.values()):
             task_widget.grid(row=row_ind+1, column=0, sticky='w', pady=10, padx=20)
+            task_widget.grid_propagate(0)
 
     def _add_task_menu(self):
         logging.info('Add task method')
@@ -153,7 +161,7 @@ class TasksManager(ctk.CTkFrame):
         self.start_btn.configure(state='disabled')
         self.add_task_btn.configure(state='disabled')
         logging.debug('Started executing tasks...')
-        for task in self.tasks_widgets:
+        for task in self.tasks_widgets.values():
             logging.debug(f'executing next task {task.task_name}')
             while task.current_time.get() != 0:
                 time.sleep(0.1)
