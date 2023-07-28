@@ -123,6 +123,9 @@ class TasksManager(ctk.CTkFrame):
         self.style = ttk.Style(self)
         self.style.theme_use('clam')
         self.style.configure('Horizontal.TProgressbar', foreground='#007cca', background='#007cca')
+
+        self.paused = True
+        self.done = True
     
     def reload_tasks_time(self):
         for task in self.tasks_widgets.values():
@@ -146,12 +149,16 @@ class TasksManager(ctk.CTkFrame):
         return delete_task
     
     def execute_tasks(self):
-        self.reload_tasks_time()
+        if self.done:
+            self.reload_tasks_time()
+            self.done = False
         thread = threading.Thread(target=self._execute_tasks)
         thread.start()
     
     def pause_tasks(self):
-        logging.info('pause')
+        self.paused = True
+        self.start_btn.configure(state='normal')
+        self.pause_btn.configure(state='disabled')
 
     def stop_tasks(self):
         logging.info('stop')
@@ -190,12 +197,16 @@ class TasksManager(ctk.CTkFrame):
         self.stop_btn.configure(state='normal')
         self._disable_delete_buttons()
         logging.debug('Started executing tasks...')
-        for task in self.tasks_widgets.values():
-            logging.debug(f'executing next task {task.task_name}')
-            while task.current_time.get() != 0:
+        self.paused = False
+        for i, task in enumerate(self.tasks_widgets.values()):
+            logging.debug(f'executing next task {task.task_name}, done: {self.done}')
+            while task.current_time.get() != 0 and not self.paused:
                 time.sleep(0.1)
                 task.decrease()
                 logging.debug(f'{task.task_name}: {task.time}')
+
+            if i + 1 == len(self.tasks_widgets) and not self.paused:
+                self.done = True
 
         logging.debug('end executing tasks')
         self.start_btn.configure(state='normal')
@@ -206,7 +217,7 @@ class TasksManager(ctk.CTkFrame):
             
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='time.log', filemode='w', level=logging.INFO, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
+    logging.basicConfig(filename='time.log', filemode='w', level=logging.DEBUG, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
 
     window = ctk.CTk()
     window.geometry('1024x800')
