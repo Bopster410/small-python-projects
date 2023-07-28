@@ -97,22 +97,28 @@ class TasksManager(ctk.CTkFrame):
         super().__init__(master, fg_color='transparent', **kwargs)
         logging.info('TasksManager object has been created')
         self.rowconfigure(1, weight=1)
-        self.columnconfigure(1, weight=1)
+        self.columnconfigure(2, weight=1)
 
         # Start tasks button
         self.start_btn = ctk.CTkButton(self, text='start', command=self.execute_tasks)
         self.start_btn.grid(row=0, column=0, sticky='w', padx=5, pady=5)
+        
+        self.pause_btn = ctk.CTkButton(self, text='pause', command=self.pause_tasks, state='disabled')
+        self.pause_btn.grid(row=0, column=1, sticky='w', padx=(0, 5))
+
+        self.stop_btn = ctk.CTkButton(self, text='stop', command=self.stop_tasks, state='disabled')
+        self.stop_btn.grid(row=0, column=2, sticky='w')
 
         # Add task button
         self.add_task_btn = ctk.CTkButton(self, text='+', width=40, command=self._add_task_menu)
-        self.add_task_btn.grid(row=0, column=1, sticky='w')
+        self.add_task_btn.grid(row=0, column=3, sticky='e', padx=(0, 5))
 
         # Tasks frame
         self.tasks_widgets = {}
         self.tasks_frame = ctk.CTkScrollableFrame(self, fg_color='transparent')
         self.tasks_frame.rowconfigure(0, weight=1)
         self.tasks_frame.columnconfigure(0, weight=1)
-        self.tasks_frame.grid(row=1, column=0, columnspan=2, sticky='nsew')
+        self.tasks_frame.grid(row=1, column=0, columnspan=4, sticky='nsew')
     
         self.style = ttk.Style(self)
         self.style.theme_use('clam')
@@ -144,6 +150,12 @@ class TasksManager(ctk.CTkFrame):
         thread = threading.Thread(target=self._execute_tasks)
         thread.start()
     
+    def pause_tasks(self):
+        logging.info('pause')
+
+    def stop_tasks(self):
+        logging.info('stop')
+    
     def _disable_delete_buttons(self):
         for task in self.tasks_widgets.values():
             task.disable_delete()
@@ -174,6 +186,8 @@ class TasksManager(ctk.CTkFrame):
     def _execute_tasks(self):
         self.start_btn.configure(state='disabled')
         self.add_task_btn.configure(state='disabled')
+        self.pause_btn.configure(state='normal')
+        self.stop_btn.configure(state='normal')
         self._disable_delete_buttons()
         logging.debug('Started executing tasks...')
         for task in self.tasks_widgets.values():
@@ -186,6 +200,8 @@ class TasksManager(ctk.CTkFrame):
         logging.debug('end executing tasks')
         self.start_btn.configure(state='normal')
         self.add_task_btn.configure(state='normal')
+        self.pause_btn.configure(state='disabled')
+        self.stop_btn.configure(state='disabled')
         self._enable_delete_buttons()
             
 
