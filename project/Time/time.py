@@ -161,7 +161,8 @@ class TasksManager(ctk.CTkFrame):
         self.pause_btn.configure(state='disabled')
 
     def stop_tasks(self):
-        logging.info('stop')
+        self.paused = True
+        self.reload_tasks_time()
     
     def _disable_delete_buttons(self):
         for task in self.tasks_widgets.values():
