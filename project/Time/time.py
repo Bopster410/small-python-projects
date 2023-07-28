@@ -16,7 +16,7 @@ class TaskWidget(ctk.CTkFrame):
         self.label = ctk.CTkLabel(self, textvariable=self.text, font=('Arial', 20))
         self.label.grid(row=0, column=0, sticky='w')
 
-        self.delete_btn = ctk.CTkButton(self, text='X', width=40, command=delete_command, fg_color='transparent', text_color='black', hover_color='#999999')
+        self.delete_btn = ctk.CTkButton(self, text='X', width=40, command=delete_command, fg_color='transparent', text_color='black', hover_color='#aaaaaa')
         self.delete_btn.grid(row=0, column=1, padx=(15, 0))
 
         self.progress_bar = ttk.Progressbar(self, orient="horizontal", mode="determinate", variable=self.current_time, maximum=time)
@@ -36,6 +36,12 @@ class TaskWidget(ctk.CTkFrame):
         current_time_double = self.current_time.get()
         current_time_int = int(current_time_double)
         self.text.set(f'{self.task_name}: {current_time_int + (current_time_int - current_time_double != 0)}')
+
+    def disable_delete(self):
+        self.delete_btn.configure(state='disabled')
+
+    def enable_delete(self):
+        self.delete_btn.configure(state='normal')
 
 
 class AddTaskDialog(ctk.CTkToplevel):
@@ -91,26 +97,35 @@ class TasksManager(ctk.CTkFrame):
         super().__init__(master, fg_color='transparent', **kwargs)
         logging.info('TasksManager object has been created')
         self.rowconfigure(1, weight=1)
-        self.columnconfigure(1, weight=1)
+        self.columnconfigure(2, weight=1)
 
         # Start tasks button
         self.start_btn = ctk.CTkButton(self, text='start', command=self.execute_tasks)
         self.start_btn.grid(row=0, column=0, sticky='w', padx=5, pady=5)
+        
+        self.pause_btn = ctk.CTkButton(self, text='pause', command=self.pause_tasks, state='disabled')
+        self.pause_btn.grid(row=0, column=1, sticky='w', padx=(0, 5))
+
+        self.stop_btn = ctk.CTkButton(self, text='stop', command=self.stop_tasks, state='disabled')
+        self.stop_btn.grid(row=0, column=2, sticky='w')
 
         # Add task button
         self.add_task_btn = ctk.CTkButton(self, text='+', width=40, command=self._add_task_menu)
-        self.add_task_btn.grid(row=0, column=1, sticky='w')
+        self.add_task_btn.grid(row=0, column=3, sticky='e', padx=(0, 5))
 
         # Tasks frame
         self.tasks_widgets = {}
         self.tasks_frame = ctk.CTkScrollableFrame(self, fg_color='transparent')
         self.tasks_frame.rowconfigure(0, weight=1)
         self.tasks_frame.columnconfigure(0, weight=1)
-        self.tasks_frame.grid(row=1, column=0, columnspan=2, sticky='nsew')
+        self.tasks_frame.grid(row=1, column=0, columnspan=4, sticky='nsew')
     
         self.style = ttk.Style(self)
         self.style.theme_use('clam')
         self.style.configure('Horizontal.TProgressbar', foreground='#007cca', background='#007cca')
+
+        self.paused = True
+        self.done = True
     
     def reload_tasks_time(self):
         for task in self.tasks_widgets.values():
@@ -130,13 +145,32 @@ class TasksManager(ctk.CTkFrame):
     def create_delete_task(self, name):
         def delete_task():
             self.delete_task(name)
-        
+
         return delete_task
     
     def execute_tasks(self):
-        self.reload_tasks_time()
+        if self.done:
+            self.reload_tasks_time()
+            self.done = False
         thread = threading.Thread(target=self._execute_tasks)
         thread.start()
+    
+    def pause_tasks(self):
+        self.paused = True
+        self.start_btn.configure(state='normal')
+        self.pause_btn.configure(state='disabled')
+
+    def stop_tasks(self):
+        self.paused = True
+        self.reload_tasks_time()
+    
+    def _disable_delete_buttons(self):
+        for task in self.tasks_widgets.values():
+            task.disable_delete()
+    
+    def _enable_delete_buttons(self):
+        for task in self.tasks_widgets.values():
+            task.enable_delete()
 
     def _reload_tasks_grid(self):
         for task_widget in self.tasks_widgets.values():
@@ -160,21 +194,31 @@ class TasksManager(ctk.CTkFrame):
     def _execute_tasks(self):
         self.start_btn.configure(state='disabled')
         self.add_task_btn.configure(state='disabled')
+        self.pause_btn.configure(state='normal')
+        self.stop_btn.configure(state='normal')
+        self._disable_delete_buttons()
         logging.debug('Started executing tasks...')
-        for task in self.tasks_widgets.values():
-            logging.debug(f'executing next task {task.task_name}')
-            while task.current_time.get() != 0:
+        self.paused = False
+        for i, task in enumerate(self.tasks_widgets.values()):
+            logging.debug(f'executing next task {task.task_name}, done: {self.done}')
+            while task.current_time.get() != 0 and not self.paused:
                 time.sleep(0.1)
                 task.decrease()
                 logging.debug(f'{task.task_name}: {task.time}')
 
+            if i + 1 == len(self.tasks_widgets) and not self.paused:
+                self.done = True
+
         logging.debug('end executing tasks')
-        self.start_btn.configure(state='enabled')
-        self.add_task_btn.configure(state='enabled')
+        self.start_btn.configure(state='normal')
+        self.add_task_btn.configure(state='normal')
+        self.pause_btn.configure(state='disabled')
+        self.stop_btn.configure(state='disabled')
+        self._enable_delete_buttons()
             
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='time.log', filemode='w', level=logging.INFO, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
+    logging.basicConfig(filename='time.log', filemode='w', level=logging.DEBUG, format='%(asctime)s | %(levelname)s | %(funcName)s, %(lineno)d: %(message)s')
 
     window = ctk.CTk()
     window.geometry('1024x800')
