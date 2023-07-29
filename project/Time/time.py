@@ -70,19 +70,23 @@ class AddTaskDialog(ctk.CTkToplevel):
         self._label.grid(row=0, column=0, columnspan=2, pady=30, sticky='nsew')
 
         self._name_entry = ctk.CTkEntry(self, placeholder_text='name')
-        self._name_entry.grid(row=1, column=0, padx=(15, 5), pady=(0, 20), sticky='we')
+        self._name_entry.grid(row=1, column=0, columnspan=2, padx=15, pady=(0, 20), sticky='we')
 
-        self._time_entry = ctk.CTkEntry(self, placeholder_text='time')
-        self._time_entry.grid(row=1, column=1, padx=(5, 15), pady=(0, 20), sticky='we')
+        self._minutes_entry = ctk.CTkEntry(self, placeholder_text='minutes')
+        self._minutes_entry.grid(row=2, column=0, padx=(15, 5), pady=(0, 20), sticky='we')
+
+        self._seconds_entry = ctk.CTkEntry(self, placeholder_text='seconds')
+        self._seconds_entry.grid(row=2, column=1, padx=(5, 15), pady=(0, 20), sticky='we')
         
         self._enter_btn = ctk.CTkButton(self, text='Enter', command=self._enter_command)
-        self._enter_btn.grid(row=2, column=0, columnspan=2, padx=15, pady=(0, 60), sticky='we')
+        self._enter_btn.grid(row=3, column=0, columnspan=2, padx=15, pady=(0, 60), sticky='we')
     
     def _enter_command(self):
         logging.info('enter button was clicked')
         name = self._name_entry.get()
-        time = self._time_entry.get()
-        self._user_input = None if name == '' or time == '' else namedtuple('Input', ['name', 'time'])(name, int(time))
+        seconds = self._seconds_entry.get()
+        minutes = self._minutes_entry.get()
+        self._user_input = None if name == '' or seconds == '' or minutes == '' else namedtuple('Input', ['name', 'time'])(name, int(seconds) + int(minutes) * 60)
         self.grab_release()
         self.destroy()
 
