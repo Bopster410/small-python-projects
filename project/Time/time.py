@@ -12,7 +12,8 @@ class TaskWidget(ctk.CTkFrame):
         self.time = time
         self.current_time = ctk.DoubleVar(value=time)
 
-        self.text = ctk.StringVar(value=f'{self.task_name}: {int(self.current_time.get())}')
+        self.text = ctk.StringVar()
+        self.update_label()
         self.label = ctk.CTkLabel(self, textvariable=self.text, font=('Arial', 20))
         self.label.grid(row=0, column=0, sticky='w')
 
@@ -35,7 +36,13 @@ class TaskWidget(ctk.CTkFrame):
     def update_label(self):
         current_time_double = self.current_time.get()
         current_time_int = int(current_time_double)
-        self.text.set(f'{self.task_name}: {current_time_int + (current_time_int - current_time_double != 0)}')
+        if self.time >= 60:
+            if 59 <= current_time_int % 60 <= 60:
+                self.text.set(f'{self.task_name} {int(current_time_int / 60 + 1)}:0')
+            else:
+                self.text.set(f'{self.task_name} {int(current_time_int / 60)}:{current_time_int % 60 + (current_time_int - current_time_double != 0)}')
+        else:
+            self.text.set(f'{self.task_name}: {current_time_int + (current_time_int - current_time_double != 0)}')
 
     def disable_delete(self):
         self.delete_btn.configure(state='disabled')
@@ -231,8 +238,7 @@ if __name__ == '__main__':
     window.resizable(False, False)
 
     tm = TasksManager(window)
-    tm.add_task('work', 15)
-    tm.add_task('rest', 2)
+    tm.add_task('work', 64)
     tm._reload_tasks_grid()
     tm.grid(row=0, column=0, sticky='nswe')
     
