@@ -1,6 +1,7 @@
 import logging, time, customtkinter as ctk, threading
 from tkinter import ttk
 from collections import namedtuple
+from datetime import time as time_dt
 
 class TaskWidget(ctk.CTkFrame):
     def __init__(self, name, time, delete_command, master, **kwargs):
@@ -12,7 +13,8 @@ class TaskWidget(ctk.CTkFrame):
         self.time = time
         self.current_time = ctk.DoubleVar(value=time)
 
-        self.text = ctk.StringVar(value=f'{self.task_name}: {int(self.current_time.get())}')
+        self.text = ctk.StringVar()
+        self.update_label()
         self.label = ctk.CTkLabel(self, textvariable=self.text, font=('Arial', 20))
         self.label.grid(row=0, column=0, sticky='w')
 
@@ -35,7 +37,15 @@ class TaskWidget(ctk.CTkFrame):
     def update_label(self):
         current_time_double = self.current_time.get()
         current_time_int = int(current_time_double)
-        self.text.set(f'{self.task_name}: {current_time_int + (current_time_int - current_time_double != 0)}')
+        if self.time >= 60:
+            if 59 <= current_time_int % 60 <= 60:
+                t = time_dt(minute=int(current_time_int / 60 + 1)).strftime('%M:%S')
+                self.text.set(f'{self.task_name} {t}')
+            else:
+                t = time_dt(minute=int(current_time_int / 60), second=current_time_int % 60 + (current_time_int - current_time_double != 0)).strftime('%M:%S')
+                self.text.set(f'{self.task_name} {t}')
+        else:
+            self.text.set(f'{self.task_name}: {current_time_int + (current_time_int - current_time_double != 0)}')
 
     def disable_delete(self):
         self.delete_btn.configure(state='disabled')
@@ -70,19 +80,23 @@ class AddTaskDialog(ctk.CTkToplevel):
         self._label.grid(row=0, column=0, columnspan=2, pady=30, sticky='nsew')
 
         self._name_entry = ctk.CTkEntry(self, placeholder_text='name')
-        self._name_entry.grid(row=1, column=0, padx=(15, 5), pady=(0, 20), sticky='we')
+        self._name_entry.grid(row=1, column=0, columnspan=2, padx=15, pady=(0, 20), sticky='we')
 
-        self._time_entry = ctk.CTkEntry(self, placeholder_text='time')
-        self._time_entry.grid(row=1, column=1, padx=(5, 15), pady=(0, 20), sticky='we')
+        self._minutes_entry = ctk.CTkEntry(self, placeholder_text='minutes')
+        self._minutes_entry.grid(row=2, column=0, padx=(15, 5), pady=(0, 20), sticky='we')
+
+        self._seconds_entry = ctk.CTkEntry(self, placeholder_text='seconds')
+        self._seconds_entry.grid(row=2, column=1, padx=(5, 15), pady=(0, 20), sticky='we')
         
         self._enter_btn = ctk.CTkButton(self, text='Enter', command=self._enter_command)
-        self._enter_btn.grid(row=2, column=0, columnspan=2, padx=15, pady=(0, 60), sticky='we')
+        self._enter_btn.grid(row=3, column=0, columnspan=2, padx=15, pady=(0, 60), sticky='we')
     
     def _enter_command(self):
         logging.info('enter button was clicked')
         name = self._name_entry.get()
-        time = self._time_entry.get()
-        self._user_input = None if name == '' or time == '' else namedtuple('Input', ['name', 'time'])(name, int(time))
+        seconds = self._seconds_entry.get()
+        minutes = self._minutes_entry.get()
+        self._user_input = None if name == '' or seconds == '' or minutes == '' else namedtuple('Input', ['name', 'time'])(name, int(seconds) + int(minutes) * 60)
         self.grab_release()
         self.destroy()
 
@@ -227,8 +241,7 @@ if __name__ == '__main__':
     window.resizable(False, False)
 
     tm = TasksManager(window)
-    tm.add_task('work', 15)
-    tm.add_task('rest', 2)
+    tm.add_task('work', 64)
     tm._reload_tasks_grid()
     tm.grid(row=0, column=0, sticky='nswe')
     
