@@ -1,6 +1,7 @@
 import logging, time, customtkinter as ctk, threading
 from tkinter import ttk
 from collections import namedtuple
+from datetime import time as time_dt
 
 class TaskWidget(ctk.CTkFrame):
     def __init__(self, name, time, delete_command, master, **kwargs):
@@ -38,9 +39,11 @@ class TaskWidget(ctk.CTkFrame):
         current_time_int = int(current_time_double)
         if self.time >= 60:
             if 59 <= current_time_int % 60 <= 60:
-                self.text.set(f'{self.task_name} {int(current_time_int / 60 + 1)}:0')
+                t = time_dt(minute=int(current_time_int / 60 + 1)).strftime('%M:%S')
+                self.text.set(f'{self.task_name} {t}')
             else:
-                self.text.set(f'{self.task_name} {int(current_time_int / 60)}:{current_time_int % 60 + (current_time_int - current_time_double != 0)}')
+                t = time_dt(minute=int(current_time_int / 60), second=current_time_int % 60 + (current_time_int - current_time_double != 0)).strftime('%M:%S')
+                self.text.set(f'{self.task_name} {t}')
         else:
             self.text.set(f'{self.task_name}: {current_time_int + (current_time_int - current_time_double != 0)}')
 
