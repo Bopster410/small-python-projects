@@ -1,4 +1,4 @@
-import logging, time, customtkinter as ctk, threading
+import logging, time, customtkinter as ctk, threading, re
 from tkinter import ttk
 from collections import namedtuple
 from datetime import time as time_dt
@@ -96,7 +96,7 @@ class AddTaskDialog(ctk.CTkToplevel):
         name = self._name_entry.get()
         seconds = self._seconds_entry.get()
         minutes = self._minutes_entry.get()
-        self._user_input = None if name == '' or seconds == '' or minutes == '' else namedtuple('Input', ['name', 'time'])(name, int(seconds) + int(minutes) * 60)
+        self._user_input = None if name == '' or not re.fullmatch(r'\d*', seconds) or not re.fullmatch(r'\d*', minutes) else namedtuple('Input', ['name', 'time'])(name, int(seconds) + int(minutes) * 60)
         self.grab_release()
         self.destroy()
 
@@ -244,9 +244,5 @@ if __name__ == '__main__':
     tm.add_task('work', 64)
     tm._reload_tasks_grid()
     tm.grid(row=0, column=0, sticky='nswe')
-    
-    # a = TaskProgressBar(window, 7)
-    # a.grid(row=0, column=0)
-    # a.start_bar()
 
     window.mainloop()
