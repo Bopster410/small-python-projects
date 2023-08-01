@@ -1,4 +1,4 @@
-import logging, time, customtkinter as ctk, threading
+import logging, time, customtkinter as ctk, threading, re
 from tkinter import ttk
 from collections import namedtuple
 from datetime import time as time_dt
@@ -96,7 +96,7 @@ class AddTaskDialog(ctk.CTkToplevel):
         name = self._name_entry.get()
         seconds = self._seconds_entry.get()
         minutes = self._minutes_entry.get()
-        self._user_input = None if name == '' or seconds == '' or minutes == '' else namedtuple('Input', ['name', 'time'])(name, int(seconds) + int(minutes) * 60)
+        self._user_input = None if name == '' or not re.fullmatch(r'\d*', seconds) or not re.fullmatch(r'\d*', minutes) else namedtuple('Input', ['name', 'time'])(name, int(seconds) + int(minutes) * 60)
         self.grab_release()
         self.destroy()
 
@@ -121,18 +121,22 @@ class TasksManager(ctk.CTkFrame):
         self.pause_btn.grid(row=0, column=1, sticky='w', padx=(0, 5))
 
         self.stop_btn = ctk.CTkButton(self, text='stop', command=self.stop_tasks, state='disabled')
-        self.stop_btn.grid(row=0, column=2, sticky='w')
+        self.stop_btn.grid(row=0, column=2, sticky='w', padx=(0, 5))
+        
+        self.repeat_switch = ctk.CTkSwitch(self, text='repeat', onvalue='on', offvalue='off')
+        self.repeat_switch.grid(row=0, column=3, sticky='w')
 
         # Add task button
         self.add_task_btn = ctk.CTkButton(self, text='+', width=40, command=self._add_task_menu)
-        self.add_task_btn.grid(row=0, column=3, sticky='e', padx=(0, 5))
+        self.add_task_btn.grid(row=0, column=4, sticky='e', padx=(0, 5))
+
 
         # Tasks frame
         self.tasks_widgets = {}
         self.tasks_frame = ctk.CTkScrollableFrame(self, fg_color='transparent')
         self.tasks_frame.rowconfigure(0, weight=1)
         self.tasks_frame.columnconfigure(0, weight=1)
-        self.tasks_frame.grid(row=1, column=0, columnspan=4, sticky='nsew')
+        self.tasks_frame.grid(row=1, column=0, columnspan=5, sticky='nsew')
     
         self.style = ttk.Style(self)
         self.style.theme_use('clam')
@@ -206,22 +210,28 @@ class TasksManager(ctk.CTkFrame):
             logging.warning(f'wrong input')
 
     def _execute_tasks(self):
-        self.start_btn.configure(state='disabled')
-        self.add_task_btn.configure(state='disabled')
-        self.pause_btn.configure(state='normal')
-        self.stop_btn.configure(state='normal')
-        self._disable_delete_buttons()
-        logging.debug('Started executing tasks...')
-        self.paused = False
-        for i, task in enumerate(self.tasks_widgets.values()):
-            logging.debug(f'executing next task {task.task_name}, done: {self.done}')
-            while task.current_time.get() != 0 and not self.paused:
-                time.sleep(0.1)
-                task.decrease()
-                logging.debug(f'{task.task_name}: {task.time}')
+        start = True
+        while start:
+            self.start_btn.configure(state='disabled')
+            self.add_task_btn.configure(state='disabled')
+            self.pause_btn.configure(state='normal')
+            self.stop_btn.configure(state='normal')
+            self._disable_delete_buttons()
+            logging.debug('Started executing tasks...')
+            self.paused = False
+            for i, task in enumerate(self.tasks_widgets.values()):
+                logging.debug(f'executing next task {task.task_name}, done: {self.done}')
+                while task.current_time.get() != 0 and not self.paused:
+                    time.sleep(0.1)
+                    task.decrease()
+                    logging.debug(f'{task.task_name}: {task.time}')
 
-            if i + 1 == len(self.tasks_widgets) and not self.paused:
-                self.done = True
+                if i + 1 == len(self.tasks_widgets) and not self.paused:
+                    self.done = True
+            
+            start = self.repeat_switch.get() == 'on'
+            if start:
+                self.reload_tasks_time()
 
         logging.debug('end executing tasks')
         self.start_btn.configure(state='normal')
@@ -244,9 +254,5 @@ if __name__ == '__main__':
     tm.add_task('work', 64)
     tm._reload_tasks_grid()
     tm.grid(row=0, column=0, sticky='nswe')
-    
-    # a = TaskProgressBar(window, 7)
-    # a.grid(row=0, column=0)
-    # a.start_bar()
 
     window.mainloop()
