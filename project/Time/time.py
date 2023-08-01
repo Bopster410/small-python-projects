@@ -210,22 +210,28 @@ class TasksManager(ctk.CTkFrame):
             logging.warning(f'wrong input')
 
     def _execute_tasks(self):
-        self.start_btn.configure(state='disabled')
-        self.add_task_btn.configure(state='disabled')
-        self.pause_btn.configure(state='normal')
-        self.stop_btn.configure(state='normal')
-        self._disable_delete_buttons()
-        logging.debug('Started executing tasks...')
-        self.paused = False
-        for i, task in enumerate(self.tasks_widgets.values()):
-            logging.debug(f'executing next task {task.task_name}, done: {self.done}')
-            while task.current_time.get() != 0 and not self.paused:
-                time.sleep(0.1)
-                task.decrease()
-                logging.debug(f'{task.task_name}: {task.time}')
+        start = True
+        while start:
+            self.start_btn.configure(state='disabled')
+            self.add_task_btn.configure(state='disabled')
+            self.pause_btn.configure(state='normal')
+            self.stop_btn.configure(state='normal')
+            self._disable_delete_buttons()
+            logging.debug('Started executing tasks...')
+            self.paused = False
+            for i, task in enumerate(self.tasks_widgets.values()):
+                logging.debug(f'executing next task {task.task_name}, done: {self.done}')
+                while task.current_time.get() != 0 and not self.paused:
+                    time.sleep(0.1)
+                    task.decrease()
+                    logging.debug(f'{task.task_name}: {task.time}')
 
-            if i + 1 == len(self.tasks_widgets) and not self.paused:
-                self.done = True
+                if i + 1 == len(self.tasks_widgets) and not self.paused:
+                    self.done = True
+            
+            start = self.repeat_switch.get() == 'on'
+            if start:
+                self.reload_tasks_time()
 
         logging.debug('end executing tasks')
         self.start_btn.configure(state='normal')
