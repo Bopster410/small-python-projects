@@ -121,18 +121,22 @@ class TasksManager(ctk.CTkFrame):
         self.pause_btn.grid(row=0, column=1, sticky='w', padx=(0, 5))
 
         self.stop_btn = ctk.CTkButton(self, text='stop', command=self.stop_tasks, state='disabled')
-        self.stop_btn.grid(row=0, column=2, sticky='w')
+        self.stop_btn.grid(row=0, column=2, sticky='w', padx=(0, 5))
+        
+        self.repeat_switch = ctk.CTkSwitch(self, text='repeat', onvalue='on', offvalue='off')
+        self.repeat_switch.grid(row=0, column=3, sticky='w')
 
         # Add task button
         self.add_task_btn = ctk.CTkButton(self, text='+', width=40, command=self._add_task_menu)
-        self.add_task_btn.grid(row=0, column=3, sticky='e', padx=(0, 5))
+        self.add_task_btn.grid(row=0, column=4, sticky='e', padx=(0, 5))
+
 
         # Tasks frame
         self.tasks_widgets = {}
         self.tasks_frame = ctk.CTkScrollableFrame(self, fg_color='transparent')
         self.tasks_frame.rowconfigure(0, weight=1)
         self.tasks_frame.columnconfigure(0, weight=1)
-        self.tasks_frame.grid(row=1, column=0, columnspan=4, sticky='nsew')
+        self.tasks_frame.grid(row=1, column=0, columnspan=5, sticky='nsew')
     
         self.style = ttk.Style(self)
         self.style.theme_use('clam')
