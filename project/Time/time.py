@@ -33,6 +33,7 @@ class TaskWidget(ctk.CTkFrame):
         if self.current_time.get() > 0:
             self.current_time.set(round(self.current_time.get() - 0.1, 1))
             self.update_label()
+            logging.debug(f'time of {self.task_name} decreased ({self.current_time} now)')
 
     def update_label(self):
         current_time_double = self.current_time.get()
@@ -144,6 +145,7 @@ class TasksManager(ctk.CTkFrame):
 
         self.paused = True
         self.done = True
+        self.stopped = True
     
     def reload_tasks_time(self):
         for task in self.tasks_widgets.values():
@@ -179,8 +181,8 @@ class TasksManager(ctk.CTkFrame):
         self.pause_btn.configure(state='disabled')
 
     def stop_tasks(self):
-        self.paused = True
-        self.reload_tasks_time()
+        self.stopped = True
+        # self.reload_tasks_time()
     
     def _disable_delete_buttons(self):
         for task in self.tasks_widgets.values():
@@ -219,19 +221,23 @@ class TasksManager(ctk.CTkFrame):
             self._disable_delete_buttons()
             logging.debug('Started executing tasks...')
             self.paused = False
+            self.stopped = False
             for i, task in enumerate(self.tasks_widgets.values()):
                 logging.debug(f'executing next task {task.task_name}, done: {self.done}')
-                while task.current_time.get() != 0 and not self.paused:
+                while task.current_time.get() != 0 and not self.paused and not self.stopped:
                     time.sleep(0.1)
                     task.decrease()
                     logging.debug(f'{task.task_name}: {task.time}')
 
-                if i + 1 == len(self.tasks_widgets) and not self.paused:
+                if (i + 1 == len(self.tasks_widgets) and not self.paused) or self.stopped:
                     self.done = True
-            
-            start = self.repeat_switch.get() == 'on'
+             
+            start = self.repeat_switch.get() == 'on' and not self.stopped
             if start:
                 self.reload_tasks_time()
+
+        if self.stopped:
+            self.reload_tasks_time()
 
         logging.debug('end executing tasks')
         self.start_btn.configure(state='normal')
@@ -251,7 +257,7 @@ if __name__ == '__main__':
     window.resizable(False, False)
 
     tm = TasksManager(window)
-    tm.add_task('work', 64)
+    tm.add_task('work', 4)
     tm._reload_tasks_grid()
     tm.grid(row=0, column=0, sticky='nswe')
 
