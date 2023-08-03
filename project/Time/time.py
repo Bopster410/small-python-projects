@@ -97,7 +97,7 @@ class AddTaskDialog(ctk.CTkToplevel):
         name = self._name_entry.get()
         seconds = self._seconds_entry.get()
         minutes = self._minutes_entry.get()
-        self._user_input = None if name == '' or not re.fullmatch(r'\d*', seconds) or not re.fullmatch(r'\d*', minutes) else namedtuple('Input', ['name', 'time'])(name, int(seconds) + int(minutes) * 60)
+        self._user_input = None if name == '' or not re.fullmatch(r'\d+', seconds) or not re.fullmatch(r'\d*', minutes) else namedtuple('Input', ['name', 'time'])(name, int(seconds) + (int(minutes) * 60 if minutes != '' else 0))
         self.grab_release()
         self.destroy()
 
@@ -182,7 +182,6 @@ class TasksManager(ctk.CTkFrame):
 
     def stop_tasks(self):
         self.stopped = True
-        # self.reload_tasks_time()
     
     def _disable_delete_buttons(self):
         for task in self.tasks_widgets.values():
