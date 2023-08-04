@@ -72,6 +72,8 @@ class AddTaskDialog(ctk.CTkToplevel):
         self.grab_set()
 
         self._user_input = None
+
+        self.bind('<Return>', lambda e: self._enter_command())
     
     def _create_widgets(self):
         self.columnconfigure((0, 1), weight=1)
