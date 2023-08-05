@@ -3,60 +3,74 @@ from tkinter import ttk
 from collections import namedtuple
 from datetime import time as time_dt
 
+
 class TaskWidget(ctk.CTkFrame):
     def __init__(self, name, time, delete_command, master, **kwargs):
         super().__init__(master=master, **kwargs)
+        # Configuring grid
         self.columnconfigure(0, weight=1)
         self.rowconfigure(1, weight=1)
 
+        # Initial values
         self.task_name = name
         self.time = time
         self.current_time = ctk.DoubleVar(value=time)
 
+        # Time label
         self.text = ctk.StringVar()
         self.update_label()
         self.label = ctk.CTkLabel(self, textvariable=self.text, font=('Arial', 20))
         self.label.grid(row=0, column=0, sticky='w')
 
+        # Delete button
         self.delete_btn = ctk.CTkButton(self, text='X', width=40, command=delete_command, fg_color='transparent', text_color='black', hover_color='#aaaaaa')
         self.delete_btn.grid(row=0, column=1, padx=(15, 0))
 
+        # Timer progress bar
         self.progress_bar = ttk.Progressbar(self, orient="horizontal", mode="determinate", variable=self.current_time, maximum=time)
         self.progress_bar.grid(row=1, column=0, columnspan=2, sticky='snwe')
 
-        
+    # Resets time 
     def reset_time(self):
         self.current_time.set(self.time)
         self.update_label()
 
+    # Decreases time by 0.1
     def decrease(self):
         if self.current_time.get() > 0:
             self.current_time.set(round(self.current_time.get() - 0.1, 1))
             self.update_label()
             logging.debug(f'time of {self.task_name} decreased ({self.current_time} now)')
 
+    # Updates label with current time
     def update_label(self):
         current_time_double = self.current_time.get()
         current_time_int = int(current_time_double)
+        # If max time is bigger than 1 minute, use special format
         if self.time >= 60:
+            # Special case when minutes are decreasing
             if 59 <= current_time_int % 60 <= 60:
                 t = time_dt(minute=int(current_time_int / 60 + 1)).strftime('%M:%S')
                 self.text.set(f'{self.task_name} {t}')
+            # Normal output
             else:
                 t = time_dt(minute=int(current_time_int / 60), second=current_time_int % 60 + (current_time_int - current_time_double != 0)).strftime('%M:%S')
                 self.text.set(f'{self.task_name} {t}')
         else:
             self.text.set(f'{self.task_name}: {current_time_int + (current_time_int - current_time_double != 0)}')
 
+    # Disables delete button
     def disable_delete(self):
         self.delete_btn.configure(state='disabled')
 
+    # Enables delete button
     def enable_delete(self):
         self.delete_btn.configure(state='normal')
 
 
 class AddTaskDialog(ctk.CTkToplevel):
     def __init__(self, master):
+        # Initial settings
         super().__init__(master)
         self.geometry('600x300')
 
@@ -72,35 +86,50 @@ class AddTaskDialog(ctk.CTkToplevel):
         self.grab_set()
 
         self._user_input = None
+
+        # Enter key returns input
+        self.bind('<Return>', lambda e: self._enter_command())
+        # Escape key closes dialog
+        self.bind('<Escape>', lambda e: self.destroy())
     
+    # 
     def _create_widgets(self):
+        # Configuring grid system
         self.columnconfigure((0, 1), weight=1)
         self.rowconfigure(0, weight=1)
 
         self._label = ctk.CTkLabel(self, text='Enter new task name and its length in seconds:', font=('Arial', 20))
         self._label.grid(row=0, column=0, columnspan=2, pady=30, sticky='nsew')
 
+        # Entry for tasks name
         self._name_entry = ctk.CTkEntry(self, placeholder_text='name')
         self._name_entry.grid(row=1, column=0, columnspan=2, padx=15, pady=(0, 20), sticky='we')
 
+        # Entry for minutes
         self._minutes_entry = ctk.CTkEntry(self, placeholder_text='minutes')
         self._minutes_entry.grid(row=2, column=0, padx=(15, 5), pady=(0, 20), sticky='we')
 
+        # Entry for seconds
         self._seconds_entry = ctk.CTkEntry(self, placeholder_text='seconds')
         self._seconds_entry.grid(row=2, column=1, padx=(5, 15), pady=(0, 20), sticky='we')
         
+        # Enter button
         self._enter_btn = ctk.CTkButton(self, text='Enter', command=self._enter_command)
         self._enter_btn.grid(row=3, column=0, columnspan=2, padx=15, pady=(0, 60), sticky='we')
     
+    # Return current input
     def _enter_command(self):
         logging.info('enter button was clicked')
+        # Get all the fields
         name = self._name_entry.get()
         seconds = self._seconds_entry.get()
         minutes = self._minutes_entry.get()
-        self._user_input = None if name == '' or not re.fullmatch(r'\d*', seconds) or not re.fullmatch(r'\d*', minutes) else namedtuple('Input', ['name', 'time'])(name, int(seconds) + int(minutes) * 60)
+        # If user is wrong, then return None
+        self._user_input = None if name == '' or not re.fullmatch(r'\d+', seconds) or not re.fullmatch(r'\d*', minutes) else namedtuple('Input', ['name', 'time'])(name, int(seconds) + (int(minutes) * 60 if minutes != '' else 0))
         self.grab_release()
         self.destroy()
 
+    # Get input
     def get_input(self):
         self.master.wait_window(self)
         return self._user_input
@@ -118,12 +147,15 @@ class TasksManager(ctk.CTkFrame):
         self.start_btn = ctk.CTkButton(self, text='start', command=self.execute_tasks)
         self.start_btn.grid(row=0, column=0, sticky='w', padx=5, pady=5)
         
+        # Pause button
         self.pause_btn = ctk.CTkButton(self, text='pause', command=self.pause_tasks, state='disabled')
         self.pause_btn.grid(row=0, column=1, sticky='w', padx=(0, 5))
 
+        # Stop tasks button
         self.stop_btn = ctk.CTkButton(self, text='stop', command=self.stop_tasks, state='disabled')
         self.stop_btn.grid(row=0, column=2, sticky='w', padx=(0, 5))
         
+        # Repeat tasks switch
         self.repeat_switch = ctk.CTkSwitch(self, text='repeat', onvalue='on', offvalue='off')
         self.repeat_switch.grid(row=0, column=3, sticky='w')
 
@@ -139,6 +171,7 @@ class TasksManager(ctk.CTkFrame):
         self.tasks_frame.columnconfigure(0, weight=1)
         self.tasks_frame.grid(row=1, column=0, columnspan=5, sticky='nsew')
     
+        # Style for progress bar
         self.style = ttk.Style(self)
         self.style.theme_use('clam')
         self.style.configure('Horizontal.TProgressbar', foreground='#007cca', background='#007cca')
@@ -147,51 +180,60 @@ class TasksManager(ctk.CTkFrame):
         self.done = True
         self.stopped = True
     
+    # Reloads time for each task
     def reload_tasks_time(self):
         for task in self.tasks_widgets.values():
             task.reset_time()
 
+    # Adds new task
     def add_task(self, name, length):
         if len(name) > 0:
             new_task = TaskWidget(name, length, self.create_delete_task(name), self.tasks_frame, width=400, height=200)
             self.tasks_widgets[name] = new_task
 
+    # Delete task
     def delete_task(self, name):
         logging.info(f'Deleting {name} task')
         if name in self.tasks_widgets:
             self.tasks_widgets.pop(name).grid_forget()
             self._reload_tasks_grid()
 
+    # Creates delete_task function for name with current name
     def create_delete_task(self, name):
         def delete_task():
             self.delete_task(name)
 
         return delete_task
-    
+
+    # Starts executing tasks in the separate threat
     def execute_tasks(self):
         if self.done:
             self.reload_tasks_time()
             self.done = False
         thread = threading.Thread(target=self._execute_tasks)
         thread.start()
-    
+
+    # Pasuses tasks
     def pause_tasks(self):
         self.paused = True
         self.start_btn.configure(state='normal')
         self.pause_btn.configure(state='disabled')
 
+    # Stops all tasks and resets time
     def stop_tasks(self):
         self.stopped = True
-        # self.reload_tasks_time()
-    
+
+    # Disables delete button for each tasks
     def _disable_delete_buttons(self):
         for task in self.tasks_widgets.values():
             task.disable_delete()
     
+    # Enables delete button for each tasks
     def _enable_delete_buttons(self):
         for task in self.tasks_widgets.values():
             task.enable_delete()
 
+    # Reloads tasks widgets in grid
     def _reload_tasks_grid(self):
         for task_widget in self.tasks_widgets.values():
             task_widget.grid_forget()
@@ -200,6 +242,7 @@ class TasksManager(ctk.CTkFrame):
             task_widget.grid(row=row_ind+1, column=0, sticky='w', pady=10, padx=20)
             task_widget.grid_propagate(0)
 
+    # Opens dialog to add task
     def _add_task_menu(self):
         logging.info('Add task method')
         dialog = AddTaskDialog(self)
@@ -211,17 +254,21 @@ class TasksManager(ctk.CTkFrame):
         else:
             logging.warning(f'wrong input')
 
+    # Execute all tasks
     def _execute_tasks(self):
-        start = True
+        start = len(self.tasks_widgets) != 0
         while start:
+            # Change buttons state
             self.start_btn.configure(state='disabled')
             self.add_task_btn.configure(state='disabled')
             self.pause_btn.configure(state='normal')
             self.stop_btn.configure(state='normal')
             self._disable_delete_buttons()
             logging.debug('Started executing tasks...')
+            # Change flags
             self.paused = False
             self.stopped = False
+            # Decrease tasks time
             for i, task in enumerate(self.tasks_widgets.values()):
                 logging.debug(f'executing next task {task.task_name}, done: {self.done}')
                 while task.current_time.get() != 0 and not self.paused and not self.stopped:
@@ -231,7 +278,7 @@ class TasksManager(ctk.CTkFrame):
 
                 if (i + 1 == len(self.tasks_widgets) and not self.paused) or self.stopped:
                     self.done = True
-             
+            # Repeat if switch is 'on' 
             start = self.repeat_switch.get() == 'on' and not self.stopped
             if start:
                 self.reload_tasks_time()
@@ -239,6 +286,7 @@ class TasksManager(ctk.CTkFrame):
         if self.stopped:
             self.reload_tasks_time()
 
+        # Return buttons to their previous
         logging.debug('end executing tasks')
         self.start_btn.configure(state='normal')
         self.add_task_btn.configure(state='normal')
