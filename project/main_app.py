@@ -1,6 +1,7 @@
 from project.Files.gui import FilesApp
 from project.Webscraping.gui import MoneyApp
 from project.Excel.gui import ExcelApp
+from project.Time.time import TasksManager
 import customtkinter as ctk
 
 class MainApp(ctk.CTk):
@@ -9,7 +10,7 @@ class MainApp(ctk.CTk):
         self.geometry('1024x800')
         self.title('epic')
         self.rowconfigure(1, weight=1)
-        self.columnconfigure((0, 1, 2), weight=1)
+        self.columnconfigure((0, 1, 2, 3), weight=1)
         
         self.money_app_btn = ctk.CTkButton(self, text='Converter', command=self.__to_money_app)
         self.money_app_btn.grid(row=0, column=0, sticky='w')
@@ -20,10 +21,13 @@ class MainApp(ctk.CTk):
         self.excel_app_btn = ctk.CTkButton(self, text='Excel', command=self.__to_excel_app)
         self.excel_app_btn.grid(row=0, column=2, sticky='e')
 
+        self.task_manager_btn = ctk.CTkButton(self, text='Tasks', command=self.__to_time_app)
+        self.task_manager_btn.grid(row=0, column=3, sticky='e')
+
         self.app_frame = ctk.CTkFrame(self)
         self.app_frame.columnconfigure(0, weight=1)
         self.app_frame.rowconfigure(0, weight=1)
-        self.app_frame.grid(row=1, column=0, columnspan=3, sticky='nsew')
+        self.app_frame.grid(row=1, column=0, columnspan=4, sticky='nsew')
 
         self.app = None
 
@@ -34,6 +38,7 @@ class MainApp(ctk.CTk):
         self.files_app_btn.configure(state='normal')
         self.money_app_btn.configure(state='disabled')
         self.excel_app_btn.configure(state='normal')
+        self.task_manager_btn.configure(state='normal')
         self.app = MoneyApp(master=self.app_frame)
         self.app.grid(row=0, column=0, sticky='nswe')
     
@@ -54,5 +59,17 @@ class MainApp(ctk.CTk):
         self.files_app_btn.configure(state='normal')
         self.money_app_btn.configure(state='normal')
         self.excel_app_btn.configure(state='disabled')
+        self.task_manager_btn.configure(state='normal')
         self.app = ExcelApp(master=self.app_frame)
+        self.app.grid(row=0, column=0, sticky='nswe')
+    
+    def __to_time_app(self):
+        if self.app != None:
+            self.app.grid_forget()
+        
+        self.files_app_btn.configure(state='normal')
+        self.money_app_btn.configure(state='normal')
+        self.excel_app_btn.configure(state='normal')
+        self.task_manager_btn.configure(state='disabled')
+        self.app = TasksManager(master=self.app_frame)
         self.app.grid(row=0, column=0, sticky='nswe')
