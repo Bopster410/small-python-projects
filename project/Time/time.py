@@ -2,6 +2,7 @@ import logging, time, customtkinter as ctk, threading, re
 from tkinter import ttk
 from collections import namedtuple
 from datetime import time as time_dt
+from plyer import notification
 
 
 class TaskWidget(ctk.CTkFrame):
@@ -92,7 +93,6 @@ class AddTaskDialog(ctk.CTkToplevel):
         # Escape key closes dialog
         self.bind('<Escape>', lambda e: self.destroy())
     
-    # 
     def _create_widgets(self):
         # Configuring grid system
         self.columnconfigure((0, 1), weight=1)
@@ -275,6 +275,8 @@ class TasksManager(ctk.CTkFrame):
                     time.sleep(0.1)
                     task.decrease()
                     logging.debug(f'{task.task_name}: {task.time}')
+                
+                notification.notify(title='Task manager', message=f'Task {task.task_name} is completed')
 
                 if (i + 1 == len(self.tasks_widgets) and not self.paused) or self.stopped:
                     self.done = True
