@@ -270,13 +270,14 @@ class TasksManager(ctk.CTkFrame):
             self.stopped = False
             # Decrease tasks time
             for i, task in enumerate(self.tasks_widgets.values()):
+                notification.notify(title='Task manager', message=f'Next task is {task.task_name}')
+
                 logging.debug(f'executing next task {task.task_name}, done: {self.done}')
                 while task.current_time.get() != 0 and not self.paused and not self.stopped:
                     time.sleep(0.1)
                     task.decrease()
                     logging.debug(f'{task.task_name}: {task.time}')
                 
-                notification.notify(title='Task manager', message=f'Task {task.task_name} is completed')
 
                 if (i + 1 == len(self.tasks_widgets) and not self.paused) or self.stopped:
                     self.done = True
@@ -287,6 +288,8 @@ class TasksManager(ctk.CTkFrame):
 
         if self.stopped:
             self.reload_tasks_time()
+        
+        notification.notify(title='Task manager', message='All tasks are completed!')
 
         # Return buttons to their previous
         logging.debug('end executing tasks')
