@@ -12,12 +12,13 @@ class MainApp(ctk.CTk):
         self.rowconfigure(0, weight=1)
         self.columnconfigure(2, weight=1)
 
-        self.open_left_panel_btn = ctk.CTkButton(self, text='=', width=40, height=40, command=self.__open_left_panel)
+        self.open_left_panel_btn = ctk.CTkButton(self, text='=', width=40, height=40, command=self.__change_left_panel_state)
         self.open_left_panel_btn.grid(row=0, column=0, sticky='nw', padx=2, pady=2)
 
-        self.left_panel_frame = ctk.CTkFrame(self, width=200)
+        self.left_panel_frame = ctk.CTkFrame(self, width=140)
         self.left_panel_frame.columnconfigure(0, weight=1)
         self.left_panel_frame.grid(row=0, column=1, sticky='nsew')
+        self.left_panel_state = 'shown'
         
         self.money_app_btn = ctk.CTkButton(self.left_panel_frame, text='Converter', command=self.__to_money_app)
         self.money_app_btn.grid(row=0, column=0, sticky='we', padx=5, pady=2)
@@ -41,8 +42,14 @@ class MainApp(ctk.CTk):
 
         self.app = None
     
-    def __open_left_panel(self):
-        pass
+    def __change_left_panel_state(self):
+        if self.left_panel_state == 'shown':
+            self.left_panel_frame.grid_forget()
+            self.left_panel_state = 'hidden'
+        else:
+            self.left_panel_frame.grid(row=0, column=1, sticky='nsew')
+            self.left_panel_state = 'shown'
+            self.left_panel_frame.grid_propagate(0)
 
     def __to_money_app(self):
         if self.app != None:
