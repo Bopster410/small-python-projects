@@ -13,6 +13,9 @@ class MainApp(ctk.CTk):
         self.rowconfigure(1, weight=1)
         self.columnconfigure(1, weight=1)
 
+        # self.icon = PhotoImage(file='project/icons/icon.png')
+        self.iconbitmap('project/icons/favicon.ico')
+
         self.left_panel_frame = ctk.CTkFrame(self, width=60)
         self.left_panel_frame.columnconfigure(0, weight=1)
         self.left_panel_frame.grid(row=1, column=0, sticky='nsew')
