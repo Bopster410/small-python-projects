@@ -206,9 +206,6 @@ class TasksManager(ctk.CTkFrame):
 
     # Starts executing tasks in the separate threat
     def execute_tasks(self):
-        if self.done:
-            self.reload_tasks_time()
-            self.done = False
         thread = threading.Thread(target=self._execute_tasks)
         thread.start()
 
