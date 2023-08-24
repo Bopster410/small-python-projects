@@ -175,10 +175,9 @@ class TasksManager(ctk.CTkFrame):
         self.style = ttk.Style(self)
         self.style.theme_use('clam')
         self.style.configure('Horizontal.TProgressbar', foreground='#007cca', background='#007cca')
-
-        self.paused = True
-        self.done = True
-        self.stopped = True
+        
+        # self.current_task_ind = 0
+        self.state = 'stop'
     
     # Reloads time for each task
     def reload_tasks_time(self):
@@ -215,13 +214,13 @@ class TasksManager(ctk.CTkFrame):
 
     # Pasuses tasks
     def pause_tasks(self):
-        self.paused = True
+        self.state = 'pause'
         self.start_btn.configure(state='normal')
         self.pause_btn.configure(state='disabled')
 
     # Stops all tasks and resets time
     def stop_tasks(self):
-        self.stopped = True
+        self.state = 'stop'
 
     # Disables delete button for each tasks
     def _disable_delete_buttons(self):
@@ -256,8 +255,9 @@ class TasksManager(ctk.CTkFrame):
 
     # Execute all tasks
     def _execute_tasks(self):
-        start = len(self.tasks_widgets) != 0
-        while start:
+        # start = 
+        self.state = 'work'
+        while self.state == 'work' and len(self.tasks_widgets) != 0:
             # Change buttons state
             self.start_btn.configure(state='disabled')
             self.add_task_btn.configure(state='disabled')
@@ -265,30 +265,25 @@ class TasksManager(ctk.CTkFrame):
             self.stop_btn.configure(state='normal')
             self._disable_delete_buttons()
             logging.debug('Started executing tasks...')
-            # Change flags
-            self.paused = False
-            self.stopped = False
-            # Decrease tasks time
+
             for i, task in enumerate(self.tasks_widgets.values()):
                 notification.notify(title='Task manager', message=f'Next task is {task.task_name}')
 
-                logging.debug(f'executing next task {task.task_name}, done: {self.done}')
-                while task.current_time.get() != 0 and not self.paused and not self.stopped:
+                logging.debug(f'executing next task {task.task_name}')
+                while task.current_time.get() != 0 and self.state == 'work':
                     time.sleep(0.1)
                     task.decrease()
                     logging.debug(f'{task.task_name}: {task.time}')
                 
-
-                if (i + 1 == len(self.tasks_widgets) and not self.paused) or self.stopped:
-                    self.done = True
-            # Repeat if switch is 'on' 
-            start = self.repeat_switch.get() == 'on' and not self.stopped
-            if start:
+                if self.state in ('stop', 'pause'):
+                    break
+                
+            if self.state == 'work':
+                self.state = 'work' if self.repeat_switch.get() == 'on' else 'stop'
+                
+            if self.state in ('work', 'stop'):
                 self.reload_tasks_time()
 
-        if self.stopped:
-            self.reload_tasks_time()
-        
         notification.notify(title='Task manager', message='All tasks are completed!')
 
         # Return buttons to their previous
